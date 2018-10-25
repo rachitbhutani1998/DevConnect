@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">DevConnect</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="example_hint">Eg: johndoe19</string>
+    <string name="label_add_user">Enter the users to add to team:</string>
+    <string name="send_invites">Send Invites</string>
+    <string name="sign_in_button">Sign In Button</string>
 </resources>
