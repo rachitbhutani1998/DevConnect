@@ -1,8 +1,6 @@
 package com.cafedroid.android.devconnect
 
-import android.app.PendingIntent.getActivity
 import android.content.Context
-import android.content.SharedPreferences
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -15,8 +13,8 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
+import android.widget.ListView
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,12 +29,20 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPref = this.getPreferences(Context.MODE_PRIVATE) ?: return
         val authTokenString:String=sharedPref.getString("AuthToken","Unavailable")
-        if (authTokenString == "Unavailable"){
-            startActivity(Intent(this,AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-            finish()
-        }
+//        if (authTokenString == "Unavailable"){
+//            startActivity(Intent(this,AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+//            finish()
+//        }
 
+        val onlineUserListView: ListView =findViewById(R.id.online_user_list)
+        val onlineUserList:ArrayList<Users> = ArrayList()
+        onlineUserList.add(Users("rachitbhutani1998","Rachit Bhutani","https://avatars0.githubusercontent.com/u/20964064?s=400&v=4"))
+        onlineUserList.add(Users("thakursachin467","Sachin Thakur","https://pbs.twimg.com/profile_images/935543967503888384/rVfTR9NS.jpg"))
+        onlineUserList.add(Users("rahuldhiman93","Rahul Dhiman","https://avatars0.githubusercontent.com/u/31551130?s=460&v=4"))
+        onlineUserList.add(Users("rahulkathuria52","Rahul Kathuria","https://media.licdn.com/dms/image/C5603AQEYPC_sHHW7RQ/profile-displayphoto-shrink_200_200/0?e=1544659200&v=beta&t=gjbW7Z93i2FgyUJVL-ndovuqxn_VzKMAm-pGmDuXmhw"))
 
+        val onlineAdapter= OnlineListAdapter(this,onlineUserList)
+        onlineUserListView.adapter=onlineAdapter
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)

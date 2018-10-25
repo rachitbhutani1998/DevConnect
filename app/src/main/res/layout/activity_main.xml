@@ -21,6 +21,7 @@
                 app:titleTextColor="#fff"/>
 
     </FrameLayout>
+
     <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -32,5 +33,17 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:fitsSystemWindows="true"/>
+
+    <android.support.design.widget.NavigationView
+            android:id="@+id/online_nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            android:fitsSystemWindows="false">
+        <ListView
+                android:id="@+id/online_user_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>
