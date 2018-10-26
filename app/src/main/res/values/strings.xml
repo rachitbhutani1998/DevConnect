@@ -7,4 +7,5 @@
     <string name="label_add_user">Enter the users to add to team:</string>
     <string name="send_invites">Send Invites</string>
     <string name="sign_in_button">Sign In Button</string>
+    <string name="show_online_users">Show Online Users</string>
 </resources>

@@ -13,7 +13,7 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.content.Intent
+import android.view.View
 import android.widget.ListView
 
 
@@ -34,7 +34,11 @@ class MainActivity : AppCompatActivity() {
 //            finish()
 //        }
 
-        val onlineUserListView: ListView =findViewById(R.id.online_user_list)
+
+        supportFragmentManager.beginTransaction().add(R.id.container,ChatFragment()).commit()
+
+
+        val onlineUserListView: ListView = this.findViewById(R.id.online_user_list)
         val onlineUserList:ArrayList<Users> = ArrayList()
         onlineUserList.add(Users("rachitbhutani1998","Rachit Bhutani","https://avatars0.githubusercontent.com/u/20964064?s=400&v=4"))
         onlineUserList.add(Users("thakursachin467","Sachin Thakur","https://pbs.twimg.com/profile_images/935543967503888384/rVfTR9NS.jpg"))
@@ -89,7 +93,11 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
-                mDrawerLayout.openDrawer(GravityCompat.START)
+                openDrawer()
+                true
+            }
+            R.id.open_online_users->{
+                openOnlineDrawer()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -108,4 +116,18 @@ class MainActivity : AppCompatActivity() {
             mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
         }
     }
+
+    fun openDrawer(v: View?=null) {
+        mDrawerLayout.openDrawer(GravityCompat.START)
+    }
+
+    fun openOnlineDrawer(v:View?=null){
+        mDrawerLayout.openDrawer(GravityCompat.END)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.home_menu,menu)
+        return true
+    }
+
 }

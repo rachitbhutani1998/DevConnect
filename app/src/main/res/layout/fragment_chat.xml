@@ -1,14 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".ChatFragment">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".ChatFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
+            android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/hello_blank_fragment"/>
+            android:orientation="vertical"
+            android:gravity="center">
 
-</FrameLayout>
+        <ImageView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="15dp"
+                android:id="@+id/coffee_mug"
+                android:src="@drawable/grab_a_coffee"/>
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="or"
+                android:layout_margin="10dp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:textAlignment="center"/>
+        <Button
+                android:id="@+id/join_a_team"
+                android:onClick="openDrawer"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:background="@android:color/black"
+                android:elevation="10dp"
+                android:text=" Join a Team"/>
+    </LinearLayout>
+
+</RelativeLayout>
