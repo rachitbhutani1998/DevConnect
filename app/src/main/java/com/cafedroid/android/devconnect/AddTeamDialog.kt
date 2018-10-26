@@ -24,7 +24,6 @@ class AddTeamDialog : Fragment() {
         val teamField:EditText=rootView.findViewById(R.id.team_name_field)
         val fabButton: FloatingActionButton = rootView.findViewById(R.id.fab_next)
         val fabClickListener: View.OnClickListener = View.OnClickListener { view ->
-
             if (!teamField.text.isEmpty()) {
                 val inviteFrag = InviteUserFragment()
                 val bundle = Bundle()
@@ -36,9 +35,5 @@ class AddTeamDialog : Fragment() {
         }
         fabButton.setOnClickListener(fabClickListener)
         return rootView
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        super.onCreateOptionsMenu(menu, inflater)
     }
 }
