@@ -3,38 +3,33 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
                 android:padding="10dp"
+                android:layout_marginTop="?android:attr/actionBarSize"
                 android:background="@color/colorPrimary"
                 android:layout_height="match_parent"
                 tools:context=".AddTeamDialog">
 
-    <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:layout_alignParentTop="true"
-            android:textSize="25sp"
-            android:fontFamily="serif"
-            android:id="@+id/edittext_label"
-            android:text="Name of the team"
-            android:labelFor="@id/username_field"/>
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:padding="10dp"
-            android:orientation="horizontal">
+    <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textColor="@android:color/white"-->
+            <!--android:textSize="20sp"-->
+            <!--android:layout_alignParentTop="true"-->
+            <!--android:id="@+id/edittext_label"-->
+            <!--android:textStyle="bold"-->
+            <!--android:text="Name of the team"-->
+            <!--android:labelFor="@id/team_name_field"/>-->
 
         <EditText
-                android:id="@+id/username_field"
-                android:layout_width="0dp"
-                android:layout_weight="5"
+                android:layout_centerInParent="true"
+                android:id="@+id/team_name_field"
+                android:layout_width="match_parent"
                 android:inputType="text"
                 android:fontFamily="serif"
-                android:textStyle="bold"
                 android:textCursorDrawable="@null"
-                android:background="@android:color/transparent"
-                android:textSize="35sp"
+                android:hint="Type here..."
+                android:padding="10dp"
+                android:background="#f000"
+                android:textSize="20sp"
                 android:textColor="@android:color/white"
                 android:layout_height="50dp"
                 android:importantForAutofill="no"
@@ -42,28 +37,17 @@
                 tools:targetApi="o"
                 tools:ignore="LabelFor"/>
 
-
-        <!--<ImageButton-->
-        <!--android:id="@+id/send_invite_btn"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_weight="1"-->
-        <!--android:src="@drawable/ic_send_black_24dp"-->
-        <!--android:layout_height="50dp"-->
-        <!--android:padding="4dp"-->
-        <!--android:background="?android:selectableItemBackground"-->
-        <!--android:textColor="@color/colorPrimary"-->
-        <!--android:text="@string/send_invites"/>-->
-    </LinearLayout>
-
     <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fabSize="normal"
+            android:elevation="20dp"
             android:foregroundGravity="center"
             android:layout_margin="15dp"
             android:background="?android:selectableItemBackground"
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_send_black_24dp"/>
+            android:src="@drawable/ic_done_black_24dp"/>
 
 </RelativeLayout>

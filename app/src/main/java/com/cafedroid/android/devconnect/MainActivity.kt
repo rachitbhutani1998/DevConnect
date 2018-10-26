@@ -99,14 +99,11 @@ class MainActivity : AppCompatActivity() {
             when (menuItem.title) {
                 "+ Add a team" -> {
                     val fragTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-                    val prev: Fragment? = supportFragmentManager.findFragmentByTag("dialog")
-                    if (prev != null) {
-                        fragTransaction.remove(prev)
-                    }
                     fragTransaction.addToBackStack(null)
-                    fragTransaction.add(R.id.container, AddTeamDialog(), "dialog").commit()
+                    fragTransaction.add(R.id.container, AddTeamDialog()).commit()
                     mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 //                    menu.add(123, 1, Menu.NONE, "Random Team")
+                    actionbar.title="Enter Team Name"
                     menu.setGroupCheckable(123, true, true)
                 }
                 null->{
@@ -158,11 +155,6 @@ class MainActivity : AppCompatActivity() {
 
     fun openOnlineDrawer(v: View? = null) {
         mDrawerLayout.openDrawer(GravityCompat.END)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.home_menu, menu)
-        return true
     }
 
 }

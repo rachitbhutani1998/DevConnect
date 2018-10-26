@@ -27,7 +27,6 @@ class MessagesAdapter constructor(context:Context, val messages: ArrayList<Messa
         val message= messages[p1]
         msgHolder.messageTV.text=message.msgText
         msgHolder.timeStampTV.text=message.dateString
-        Toast.makeText(mContext,message.dateString,Toast.LENGTH_SHORT).show()
         Glide.with(mContext).load(message.senderImg).into(msgHolder.userImage)
         msgHolder.userName.text=message.msgSender
     }
