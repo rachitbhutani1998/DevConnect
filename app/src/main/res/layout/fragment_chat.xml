@@ -3,6 +3,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="?attr/actionBarSize"
                 tools:context=".ChatFragment">
 
     <LinearLayout
@@ -17,6 +18,7 @@
                 android:layout_height="200dp"
                 android:layout_marginStart="15dp"
                 android:id="@+id/coffee_mug"
+                android:tint="@color/colorPrimary"
                 android:src="@drawable/grab_a_coffee"/>
         <TextView
                 android:layout_width="match_parent"
@@ -28,15 +30,52 @@
                 android:textAlignment="center"/>
         <Button
                 android:id="@+id/join_a_team"
-                android:onClick="openDrawer"
                 android:padding="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
+                android:onClick="openDrawer"
                 android:textSize="12sp"
                 android:textColor="@android:color/white"
-                android:background="@android:color/black"
+                android:background="@color/colorPrimary"
                 android:elevation="10dp"
                 android:text=" Join a Team"/>
     </LinearLayout>
+
+    <RelativeLayout
+            android:id="@+id/chat_view"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="10dp"
+            android:background="@android:color/white"
+            android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+                android:id="@+id/chat_messages"
+                android:layout_width="match_parent"
+                android:padding="10dp"
+                android:layout_above="@id/message_field"
+                android:layout_height="match_parent"/>
+
+        <EditText
+                android:importantForAutofill="no"
+                android:id="@+id/message_field"
+                android:layout_width="match_parent"
+                android:inputType="text"
+                android:hint="Type a message"
+                android:layout_marginStart="10dp"
+                android:layout_toStartOf="@+id/send_btn"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true" tools:targetApi="o"/>
+        <ImageButton
+                android:id="@id/send_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_send_black_24dp"
+                android:padding="10dp"
+                android:tint="@color/colorPrimary"
+                android:background="?android:selectableItemBackground"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>

@@ -22,31 +22,56 @@ class MainActivity : AppCompatActivity() {
     lateinit var menu: Menu
     private lateinit var mDrawerLayout: DrawerLayout
     lateinit var mNavigationView: NavigationView
+    val chatFragment:Fragment=ChatFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         val sharedPref = this.getPreferences(Context.MODE_PRIVATE) ?: return
-        val authTokenString:String=sharedPref.getString("AuthToken","Unavailable")
+        val authTokenString: String = sharedPref.getString("AuthToken", "Unavailable")
 //        if (authTokenString == "Unavailable"){
 //            startActivity(Intent(this,AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
 //            finish()
 //        }
 
 
-        supportFragmentManager.beginTransaction().add(R.id.container,ChatFragment()).commit()
+        supportFragmentManager.beginTransaction().add(R.id.container, chatFragment).commit()
 
 
-        val onlineUserListView: ListView = this.findViewById(R.id.online_user_list)
-        val onlineUserList:ArrayList<Users> = ArrayList()
-        onlineUserList.add(Users("rachitbhutani1998","Rachit Bhutani","https://avatars0.githubusercontent.com/u/20964064?s=400&v=4"))
-        onlineUserList.add(Users("thakursachin467","Sachin Thakur","https://pbs.twimg.com/profile_images/935543967503888384/rVfTR9NS.jpg"))
-        onlineUserList.add(Users("rahuldhiman93","Rahul Dhiman","https://avatars0.githubusercontent.com/u/31551130?s=460&v=4"))
-        onlineUserList.add(Users("rahulkathuria52","Rahul Kathuria","https://media.licdn.com/dms/image/C5603AQEYPC_sHHW7RQ/profile-displayphoto-shrink_200_200/0?e=1544659200&v=beta&t=gjbW7Z93i2FgyUJVL-ndovuqxn_VzKMAm-pGmDuXmhw"))
+        val onlineUserListView: ListView = findViewById(R.id.online_user_list)
+        val onlineUserList: ArrayList<Users> = ArrayList()
+        onlineUserList.add(
+            Users(
+                "rachitbhutani1998",
+                "Rachit Bhutani",
+                "https://avatars0.githubusercontent.com/u/20964064?s=400&v=4"
+            )
+        )
+        onlineUserList.add(
+            Users(
+                "thakursachin467",
+                "Sachin Thakur",
+                "https://pbs.twimg.com/profile_images/935543967503888384/rVfTR9NS.jpg"
+            )
+        )
+        onlineUserList.add(
+            Users(
+                "rahuldhiman93",
+                "Rahul Dhiman",
+                "https://avatars0.githubusercontent.com/u/31551130?s=460&v=4"
+            )
+        )
+        onlineUserList.add(
+            Users(
+                "rahulkathuria52",
+                "Rahul Kathuria",
+                "https://media.licdn.com/dms/image/C5603AQEYPC_sHHW7RQ/profile-displayphoto-shrink_200_200/0?e=1544659200&v=beta&t=gjbW7Z93i2FgyUJVL-ndovuqxn_VzKMAm-pGmDuXmhw"
+            )
+        )
 
-        val onlineAdapter= OnlineListAdapter(this,onlineUserList)
-        onlineUserListView.adapter=onlineAdapter
+        val onlineAdapter = OnlineListAdapter(this, onlineUserList)
+        onlineUserListView.adapter = onlineAdapter
 
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -56,12 +81,16 @@ class MainActivity : AppCompatActivity() {
             setDisplayHomeAsUpEnabled(true)
             setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp)
         }
+        actionbar!!.title="DevConnect"
 
         mDrawerLayout = findViewById(R.id.main_drawer)
         mNavigationView = findViewById(R.id.nav_view)
 
         menu = mNavigationView.menu
         menu.add(123, 0, 0, "+ Add a team")
+        menu.add(123,0,0,"Random Team")
+        menu.add(123,0,0,"Second Team")
+        menu.add(123,0,0,"Third Team")
 
         mNavigationView.setNavigationItemSelectedListener { menuItem ->
             Log.e("MainActivity", menuItem.title.toString() + " " + menuItem.itemId)
@@ -79,7 +108,11 @@ class MainActivity : AppCompatActivity() {
 //                    menu.add(123, 1, Menu.NONE, "Random Team")
                     menu.setGroupCheckable(123, true, true)
                 }
+                null->{
+                }
                 else -> {
+                    actionbar.title=menuItem.title
+                    supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()
                 }
             }
             menu.setGroupCheckable(123, true, true)
@@ -96,7 +129,7 @@ class MainActivity : AppCompatActivity() {
                 openDrawer()
                 true
             }
-            R.id.open_online_users->{
+            R.id.open_online_users -> {
                 openOnlineDrawer()
                 true
             }
@@ -107,6 +140,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
             mDrawerLayout.closeDrawer(GravityCompat.START)
+            mDrawerLayout.closeDrawer(GravityCompat.END)
         } else {
             super.onBackPressed()
             val size = mNavigationView.menu.size()
@@ -117,16 +151,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun openDrawer(v: View?=null) {
+    public fun openDrawer(v: View? = null) {
         mDrawerLayout.openDrawer(GravityCompat.START)
     }
 
-    fun openOnlineDrawer(v:View?=null){
+    fun openOnlineDrawer(v: View? = null) {
         mDrawerLayout.openDrawer(GravityCompat.END)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.home_menu,menu)
+        menuInflater.inflate(R.menu.home_menu, menu)
         return true
     }
 
