@@ -10,7 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import java.text.SimpleDateFormat
+import com.cafedroid.android.devconnect.classes.Message
 
 /**
  * A simple [Fragment] subclass.
@@ -43,7 +43,7 @@ class ChatFragment : Fragment() {
         messageList.add(
             Message(
                 "Rahul Kathuria",
-                "Today at 6:51 PM",
+                System.currentTimeMillis(),
                 "https://media.licdn.com/dms/image/C5603AQEYPC_sHHW7RQ/profile-displayphoto-shrink_200_200/0?e=1544659200&v=beta&t=gjbW7Z93i2FgyUJVL-ndovuqxn_VzKMAm-pGmDuXmhw",
                 "Hello There, What's up?"
             )
@@ -55,7 +55,7 @@ class ChatFragment : Fragment() {
                 messageList.add(
                     Message(
                         "Rachit Bhutani",
-                        "12:27 PM",
+                        System.currentTimeMillis(),
                         "https://avatars0.githubusercontent.com/u/20964064?s=400&v=4",
                         editText.text.toString()
                     )

@@ -1,4 +1,4 @@
-package com.cafedroid.android.devconnect
+package com.cafedroid.android.devconnect.classes
 
 class Users constructor(uName: String, name: String, uImage: String) {
 

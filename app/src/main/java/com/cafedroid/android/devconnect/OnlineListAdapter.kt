@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.cafedroid.android.devconnect.classes.Users
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.ArrayList
 

@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.cafedroid.android.devconnect.classes.Message
 
 class MessagesAdapter constructor(context:Context, val messages: ArrayList<Message>): RecyclerView.Adapter<MessagesAdapter.MessageHolder>() {
 
@@ -24,7 +26,8 @@ class MessagesAdapter constructor(context:Context, val messages: ArrayList<Messa
     override fun onBindViewHolder(msgHolder: MessageHolder, p1: Int) {
         val message= messages[p1]
         msgHolder.messageTV.text=message.msgText
-        msgHolder.timeStampTV.text=message.msgTime
+        msgHolder.timeStampTV.text=message.dateString
+        Toast.makeText(mContext,message.dateString,Toast.LENGTH_SHORT).show()
         Glide.with(mContext).load(message.senderImg).into(msgHolder.userImage)
         msgHolder.userName.text=message.msgSender
     }

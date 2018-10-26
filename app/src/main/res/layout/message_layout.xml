@@ -4,7 +4,7 @@
                 android:padding="10dp"
                 android:layout_height="wrap_content">
     <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:gravity="center_vertical"
             android:layout_height="wrap_content"
             android:id="@+id/u_details"
@@ -19,19 +19,20 @@
                 android:layout_height="30dp"/>
 
         <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_marginStart="5dp"
                 android:textSize="14sp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/black"
                 android:id="@+id/msg_u_name"
                 android:singleLine="true"
                 android:text="@string/app_name"/>
         <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textAlignment="viewEnd"
                 android:id="@+id/timestamp_tv"
+                android:layout_gravity="center_vertical|end"
                 android:text="Today at 7:45 PM"
                 android:singleLine="true"
                 android:layout_marginStart="5dp"
@@ -45,6 +46,7 @@
             android:layout_marginStart="35dp"
             android:textSize="13sp"
             android:textColor="@android:color/white"
+            android:textIsSelectable="true"
             android:text="Lorem ispum ya ipsum Ipsum Lorem suck some to"
             android:background="@color/colorPrimary"
             android:padding="5dp"
