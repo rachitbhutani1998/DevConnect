@@ -52,7 +52,16 @@ class AuthActivity : AppCompatActivity() {
                 .addQueryParameter("code", code)
                 .build().getAsJSONObject(object : JSONObjectRequestListener {
                     override fun onResponse(response: JSONObject?) {
-                        val token=response!!.optString("token").substring(7)
+                        val token=response!!.optString("token")
+                        val sharedPref=applicationContext.getSharedPreferences("TOKEN",Context.MODE_PRIVATE)
+                        val sharedPrefEditor=sharedPref.edit()
+                        with(sharedPrefEditor){
+                            putString("auth_token",token)
+                            apply()
+                            startActivity(Intent(applicationContext,MainActivity::class.java))
+                            finish()
+                        }
+
 //                        Log.e("Response", decoded(token))
                         decoded(token)
                     }
@@ -61,8 +70,6 @@ class AuthActivity : AppCompatActivity() {
                         Log.e("Response", anError?.message)
                     }
                 })
-
-
         }
     }
 
@@ -71,7 +78,7 @@ class AuthActivity : AppCompatActivity() {
     @Throws(Exception::class)
     fun decoded(JWTEncoded: String) :String{
         try {
-            val split = JWTEncoded.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            val split = JWTEncoded.substring(7).split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             Log.d("JWT_DECODED", "Body: " + getJson(split[1]))
             return getJson(split[1])
         } catch (e: UnsupportedEncodingException) {
