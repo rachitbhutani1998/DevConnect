@@ -22,8 +22,9 @@ class AddTeamDialog : Fragment() {
         // Inflate the layout for this fragment
         val rootView: View = inflater.inflate(R.layout.fragment_add_team_dialog, container, false)
         val teamField:EditText=rootView.findViewById(R.id.team_name_field)
+
         val fabButton: FloatingActionButton = rootView.findViewById(R.id.fab_next)
-        val fabClickListener: View.OnClickListener = View.OnClickListener { view ->
+        fabButton.setOnClickListener{
             if (!teamField.text.isEmpty()) {
                 val inviteFrag = InviteUserFragment()
                 val bundle = Bundle()
@@ -33,7 +34,6 @@ class AddTeamDialog : Fragment() {
             } else Toast.makeText(context,"Team name mustn't be empty.",Toast.LENGTH_SHORT).show()
 
         }
-        fabButton.setOnClickListener(fabClickListener)
         return rootView
     }
 }
