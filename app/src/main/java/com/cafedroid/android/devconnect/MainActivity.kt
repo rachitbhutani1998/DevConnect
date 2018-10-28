@@ -1,5 +1,9 @@
 package com.cafedroid.android.devconnect
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -15,8 +19,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ListView
 import android.widget.Toast
+import com.androidnetworking.AndroidNetworking
 import com.cafedroid.android.devconnect.classes.Users
-import com.pusher.chatkit.users.User
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,17 +32,20 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var onlineUserList: ArrayList<Users>
     private lateinit var onlineAdapter:OnlineListAdapter
+    lateinit var sharedPref:SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        AndroidNetworking.initialize(getApplicationContext());
 
-//        val sharedPref = this.getPreferences(Context.MODE_PRIVATE) ?: return
-//        val authTokenString: String = sharedPref.getString("AuthToken", "Unavailable")
-//        if (authTokenString == "Unavailable"){
-//            startActivity(Intent(this,AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-//            finish()
-//        }
+        sharedPref = this.getSharedPreferences("TOKEN",Context.MODE_PRIVATE) ?: return
+        val authTokenString: String = sharedPref.getString("auth_token", "Unavailable")
+//        Toast.makeText(this,authTokenString,Toast.LENGTH_SHORT).show()
+        if (authTokenString == "Unavailable"){
+            startActivity(Intent(this,AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+            finish()
+        }
 
 
         supportFragmentManager.beginTransaction().add(R.id.container, chatFragment).commit()
@@ -126,6 +133,7 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {

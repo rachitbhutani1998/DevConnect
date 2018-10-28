@@ -20,13 +20,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
         <activity android:name=".AuthActivity" android:theme="@style/AppThemeActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="http" android:host="localhost:3000" android:pathPattern=".*"/>
+                <data android:scheme="https" android:host="admiring-snyder-dead31.netlify.com" android:pathPattern=".*"/>
             </intent-filter>
         </activity>
     </application>
