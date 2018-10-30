@@ -8,4 +8,7 @@
     <string name="send_invites">Send Invites</string>
     <string name="sign_in_button">Sign In Button</string>
     <string name="show_online_users">Show Online Users</string>
+    <string name="brewing_some_coffee">Brewing some coffee…</string>
+    <string name="join_a_team_first">Join a team first!!</string>
+    <string name="nobody_to_fetch_here">Nobody to fetch here ¯\\_(ツ)_/¯</string>
 </resources>

@@ -13,14 +13,20 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
 import android.widget.ListView
-import android.widget.Toast
+import android.widget.TextView
 import com.androidnetworking.AndroidNetworking
+import com.bumptech.glide.Glide
 import com.cafedroid.android.devconnect.classes.Users
+import com.pusher.chatkit.users.User
+import org.json.JSONObject
+import java.io.UnsupportedEncodingException
 
 
 class MainActivity : AppCompatActivity() {
@@ -37,21 +43,37 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        AndroidNetworking.initialize(getApplicationContext());
+        AndroidNetworking.initialize(applicationContext)
+
+        mDrawerLayout = findViewById(R.id.main_drawer)
+        mNavigationView = findViewById(R.id.nav_view)
 
         sharedPref = this.getSharedPreferences("TOKEN",Context.MODE_PRIVATE) ?: return
         val authTokenString: String = sharedPref.getString("auth_token", "Unavailable")
-//        Toast.makeText(this,authTokenString,Toast.LENGTH_SHORT).show()
         if (authTokenString == "Unavailable"){
             startActivity(Intent(this,AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             finish()
         }
+
+        val jsonObject=JSONObject(decoded(authTokenString))
+        val currentUsers=Users(jsonObject.optString("id")
+            ,jsonObject.optString("name")
+            ,jsonObject.optString("avatar"))
+
+        val userProfileImage:ImageView=mNavigationView.getHeaderView(0).findViewById(R.id.user_profile_image)
+        val userProfileName:TextView=mNavigationView.getHeaderView(0).findViewById(R.id.user_profile_name)
+
+        Glide.with(this).load(currentUsers.userImage).into(userProfileImage)
+        userProfileName.text=currentUsers.fullName
+
+
 
 
         supportFragmentManager.beginTransaction().add(R.id.container, chatFragment).commit()
 
 
         val onlineUserListView: ListView = findViewById(R.id.online_user_list)
+        onlineUserListView.emptyView=findViewById(R.id.empty_view_users)
         onlineUserList = ArrayList()
 //        onlineUserList.add(
 //            Users(
@@ -95,8 +117,6 @@ class MainActivity : AppCompatActivity() {
         }
         actionbar!!.title = "DevConnect"
 
-        mDrawerLayout = findViewById(R.id.main_drawer)
-        mNavigationView = findViewById(R.id.nav_view)
 
         menu = mNavigationView.menu
         menu.add(123, 0, 0, "+ Add a team")
@@ -181,5 +201,24 @@ class MainActivity : AppCompatActivity() {
         onlineUserList.clear()
         onlineUserList.addAll(onlineUserListUpdated)
         onlineAdapter.notifyDataSetChanged()
+    }
+
+
+    //Decoding JWT code
+    @Throws(Exception::class)
+    fun decoded(JWTEncoded: String) :String{
+        try {
+            val split = JWTEncoded.substring(7).split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            return getJson(split[1])
+        } catch (e: UnsupportedEncodingException) {
+            //Error
+        }
+        return "Error 404. Data not found."
+    }
+
+    @Throws(UnsupportedEncodingException::class)
+    private fun getJson(strEncoded: String): String {
+        val decodedBytes = android.util.Base64.decode(strEncoded, Base64.URL_SAFE)
+        return String(decodedBytes)
     }
 }

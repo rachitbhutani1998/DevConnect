@@ -12,6 +12,7 @@
             android:id="@+id/github_signin_btn"
             android:layout_width="300dp"
             android:layout_height="300dp"
+            android:tint="@android:color/white"
             android:scaleType="centerCrop"
             android:padding="70dp"
             android:elevation="12dp"
@@ -19,5 +20,11 @@
             android:layout_centerInParent="true"
             android:src="@drawable/github_600969"
             android:contentDescription="@string/sign_in_button"/>
+
+    <ProgressBar
+            android:id="@+id/auth_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
 
 </RelativeLayout>
