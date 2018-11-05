@@ -11,4 +11,21 @@
     <string name="brewing_some_coffee">Brewing some coffee…</string>
     <string name="join_a_team_first">Join a team first!!</string>
     <string name="nobody_to_fetch_here">Nobody to fetch here ¯\\_(ツ)_/¯</string>
+
+    <string-array name="loading_texts">
+        <item>Loading your stuff…</item>
+        <item>Processing some machine code…</item>
+        <item>Debugging your code…</item>
+        <item>Grab Your Coffee…</item>
+        <item>Compiling your code…</item>
+        <item>Fixing errors…</item>
+        <item>Loading your content…</item>
+        <item>Debugging your code…</item>
+        <item>Logging the console…</item>
+        <item>Configuration files…</item>
+        <item>Committing your changes…</item>
+        <item>Connecting to the community…</item>
+        <item>Brewing some coffee…</item>
+        <item>Installing caffeine…</item>
+    </string-array>
 </resources>

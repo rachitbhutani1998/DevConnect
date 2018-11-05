@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.*
 import com.cafedroid.android.devconnect.classes.Message
 import com.cafedroid.android.devconnect.classes.Users
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * A simple [Fragment] subclass.

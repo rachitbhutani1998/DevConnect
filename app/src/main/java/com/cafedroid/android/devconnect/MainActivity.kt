@@ -8,6 +8,8 @@ import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentTransaction
+import android.support.v4.app.LoaderManager
+import android.support.v4.content.Loader
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBar
@@ -21,24 +23,39 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import com.androidnetworking.AndroidNetworking
 import com.bumptech.glide.Glide
+import com.cafedroid.android.devconnect.classes.ChatKitLoader
 import com.cafedroid.android.devconnect.classes.Users
+import com.pusher.chatkit.AndroidChatkitDependencies
+import com.pusher.chatkit.ChatManager
+import com.pusher.chatkit.ChatkitTokenProvider
+import com.pusher.chatkit.CurrentUser
 import com.pusher.chatkit.users.User
+import com.pusher.util.Result
+import elements.Error
 import org.json.JSONObject
 import java.io.UnsupportedEncodingException
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<CurrentUser> {
+
 
     lateinit var menu: Menu
     private lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mNavigationView: NavigationView
+
+    //Fragments used in the activity
+    private val splashFragment: Fragment = SplashFragment()
     private val chatFragment: Fragment = ChatFragment()
 
     private lateinit var onlineUserList: ArrayList<Users>
-    private lateinit var onlineAdapter:OnlineListAdapter
-    lateinit var sharedPref:SharedPreferences
+    private lateinit var onlineAdapter: OnlineListAdapter
+    lateinit var chatKitUser: CurrentUser
+    lateinit var sharedPref: SharedPreferences
+    lateinit var USER_ID: String
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,61 +65,28 @@ class MainActivity : AppCompatActivity() {
         mDrawerLayout = findViewById(R.id.main_drawer)
         mNavigationView = findViewById(R.id.nav_view)
 
-        sharedPref = this.getSharedPreferences("TOKEN",Context.MODE_PRIVATE) ?: return
+        sharedPref = this.getSharedPreferences("TOKEN", Context.MODE_PRIVATE) ?: return
         val authTokenString: String = sharedPref.getString("auth_token", "Unavailable")
-        if (authTokenString == "Unavailable"){
-            startActivity(Intent(this,AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        if (authTokenString == "Unavailable") {
+            startActivity(Intent(this, AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             finish()
         }
 
-        val jsonObject=JSONObject(decoded(authTokenString))
-        val currentUsers=Users(jsonObject.optString("id")
-            ,jsonObject.optString("name")
-            ,jsonObject.optString("avatar"))
+        val jsonObject = JSONObject(decoded(authTokenString))
+        val currentUsers = Users(
+            jsonObject.optString("id")
+            , jsonObject.optString("name")
+            , jsonObject.optString("avatar")
+        )
 
-        val userProfileImage:ImageView=mNavigationView.getHeaderView(0).findViewById(R.id.user_profile_image)
-        val userProfileName:TextView=mNavigationView.getHeaderView(0).findViewById(R.id.user_profile_name)
+        USER_ID = currentUsers.userName
 
-        Glide.with(this).load(currentUsers.userImage).into(userProfileImage)
-        userProfileName.text=currentUsers.fullName
+        supportFragmentManager.beginTransaction().add(R.id.container, splashFragment).commit()
 
-
-
-
-        supportFragmentManager.beginTransaction().add(R.id.container, chatFragment).commit()
-
-
+        supportLoaderManager.initLoader(1, null, this)
         val onlineUserListView: ListView = findViewById(R.id.online_user_list)
-        onlineUserListView.emptyView=findViewById(R.id.empty_view_users)
+        onlineUserListView.emptyView = findViewById(R.id.empty_view_users)
         onlineUserList = ArrayList()
-//        onlineUserList.add(
-//            Users(
-//                "rachitbhutani1998",
-//                "Rachit Bhutani",
-//                "https://avatars0.githubusercontent.com/u/20964064?s=400&v=4"
-//            )
-//        )
-//        onlineUserList.add(
-//            Users(
-//                "thakursachin467",
-//                "Sachin Thakur",
-//                "https://pbs.twimg.com/profile_images/935543967503888384/rVfTR9NS.jpg"
-//            )
-//        )
-//        onlineUserList.add(
-//            Users(
-//                "rahuldhiman93",
-//                "Rahul Dhiman",
-//                "https://avatars0.githubusercontent.com/u/31551130?s=460&v=4"
-//            )
-//        )
-//        onlineUserList.add(
-//            Users(
-//                "rahulkathuria52",
-//                "Rahul Kathuria",
-//                "https://media.licdn.com/dms/image/C5603AQEYPC_sHHW7RQ/profile-displayphoto-shrink_200_200/0?e=1544659200&v=beta&t=gjbW7Z93i2FgyUJVL-ndovuqxn_VzKMAm-pGmDuXmhw"
-//            )
-//        )
 
         onlineAdapter = OnlineListAdapter(this, onlineUserList)
         onlineUserListView.adapter = onlineAdapter
@@ -140,9 +124,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 else -> {
                     actionbar.title = menuItem.title
-                    val bundle=Bundle()
-                    bundle.putString("team_name",actionbar.title.toString())
-                    chatFragment.arguments=bundle
+                    val bundle = Bundle()
+                    bundle.putString("team_name", actionbar.title.toString())
+                    chatFragment.arguments = bundle
                     supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()
                 }
             }
@@ -197,7 +181,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun addOnlineUser(onlineUserListUpdated: ArrayList<Users>) {
-//        Toast.makeText(applicationContext,onlineUserListUpdated.size.toString(),Toast.LENGTH_SHORT).show()
         onlineUserList.clear()
         onlineUserList.addAll(onlineUserListUpdated)
         onlineAdapter.notifyDataSetChanged()
@@ -206,7 +189,7 @@ class MainActivity : AppCompatActivity() {
 
     //Decoding JWT code
     @Throws(Exception::class)
-    fun decoded(JWTEncoded: String) :String{
+    fun decoded(JWTEncoded: String): String {
         try {
             val split = JWTEncoded.substring(7).split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             return getJson(split[1])
@@ -220,5 +203,23 @@ class MainActivity : AppCompatActivity() {
     private fun getJson(strEncoded: String): String {
         val decodedBytes = android.util.Base64.decode(strEncoded, Base64.URL_SAFE)
         return String(decodedBytes)
+    }
+
+    override fun onCreateLoader(p0: Int, p1: Bundle?): Loader<CurrentUser> {
+        return ChatKitLoader(this, USER_ID)
+    }
+
+    override fun onLoadFinished(p0: Loader<CurrentUser>, p1: CurrentUser?) {
+//        chatKitUser = p1!!
+//        val userProfileImage: ImageView = mNavigationView.getHeaderView(0).findViewById(R.id.user_profile_image)
+//        val userProfileName: TextView = mNavigationView.getHeaderView(0).findViewById(R.id.user_profile_name)
+//        Glide.with(this).load(chatKitUser.avatarURL).into(userProfileImage)
+//        userProfileName.text = chatKitUser.name
+        Log.e("Loader","Object Received")
+        supportFragmentManager.beginTransaction().remove(splashFragment).add(R.id.container, chatFragment).commit()
+    }
+
+    override fun onLoaderReset(p0: Loader<CurrentUser>) {
+
     }
 }
