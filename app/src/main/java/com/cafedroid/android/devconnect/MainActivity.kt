@@ -55,16 +55,19 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<CurrentU
     lateinit var chatKitUser: CurrentUser
     lateinit var sharedPref: SharedPreferences
     lateinit var USER_ID: String
+    val INSTANCE_LOCATOR: String = "v1:us1:3dd62a71-d604-4985-bbb9-5965ea8bb128"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Log.e("Main","started")
+        supportFragmentManager.beginTransaction().add(R.id.container, splashFragment).commit()
+        Log.e("Main","splashed")
         AndroidNetworking.initialize(applicationContext)
 
         mDrawerLayout = findViewById(R.id.main_drawer)
         mNavigationView = findViewById(R.id.nav_view)
-
         sharedPref = this.getSharedPreferences("TOKEN", Context.MODE_PRIVATE) ?: return
         val authTokenString: String = sharedPref.getString("auth_token", "Unavailable")
         if (authTokenString == "Unavailable") {
@@ -81,9 +84,10 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<CurrentU
 
         USER_ID = currentUsers.userName
 
-        supportFragmentManager.beginTransaction().add(R.id.container, splashFragment).commit()
 
-        supportLoaderManager.initLoader(1, null, this)
+//        supportLoaderManager.initLoader(1, null, this)
+
+
         val onlineUserListView: ListView = findViewById(R.id.online_user_list)
         onlineUserListView.emptyView = findViewById(R.id.empty_view_users)
         onlineUserList = ArrayList()
@@ -135,7 +139,32 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<CurrentU
             true
         }
 
-
+        val header:View=mNavigationView.getHeaderView(0)
+        val profileImageView:ImageView=header.findViewById(R.id.user_profile_image)
+        val profileNameView:TextView=header.findViewById(R.id.user_profile_name)
+        Glide.with(this).load(currentUsers.userImage).into(profileImageView)
+        profileNameView.text=currentUsers.fullName
+        val chatManager = ChatManager(
+            instanceLocator = INSTANCE_LOCATOR,
+            userId = USER_ID,
+            dependencies = AndroidChatkitDependencies(
+                tokenProvider = ChatkitTokenProvider(
+                    endpoint = "https://ancient-temple-53657.herokuapp.com/api/auth/authenticate",
+                    userId = USER_ID
+                )
+            )
+        )
+        chatManager.connect { result ->
+            when (result) {
+                is Result.Success -> {
+                    chatKitUser=result.value
+                    supportFragmentManager.beginTransaction().remove(splashFragment).add(R.id.container, chatFragment).commit()
+                    Log.e("TAGG","image ${chatKitUser.name}")
+                }
+                is Result.Failure -> Log.e("ActivityDC", result.error.reason)
+                else -> Log.e("ActivityDC", "Unknown Error")
+            }
+        }
     }
 
 

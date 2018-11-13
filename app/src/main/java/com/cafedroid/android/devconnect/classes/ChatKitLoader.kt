@@ -3,11 +3,8 @@ package com.cafedroid.android.devconnect.classes
 import android.content.Context
 import android.support.v4.content.AsyncTaskLoader
 import android.util.Log
-import android.widget.Toast
 import com.pusher.chatkit.*
 import com.pusher.util.Result
-import elements.Error
-import java.util.logging.Handler
 
 class ChatKitLoader constructor(context: Context, val user_id: String) : AsyncTaskLoader<CurrentUser>(context) {
 
@@ -37,7 +34,6 @@ class ChatKitLoader constructor(context: Context, val user_id: String) : AsyncTa
                 else ->Log.e("Loader","Unknown Error")
             }
         }
-
         return chatKitResult
     }
 
