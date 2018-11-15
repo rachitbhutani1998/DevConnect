@@ -33,7 +33,13 @@
             app:headerLayout="@layout/main_nav_header"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:fitsSystemWindows="true"/>
+            android:fitsSystemWindows="true">
+        <ListView
+                android:id="@+id/rooms_nav_lv"
+                android:layout_marginTop="193dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+    </android.support.design.widget.NavigationView>
 
     <android.support.design.widget.NavigationView
             android:id="@+id/online_nav_view"

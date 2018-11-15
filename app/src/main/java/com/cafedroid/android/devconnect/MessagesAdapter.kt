@@ -2,16 +2,15 @@ package com.cafedroid.android.devconnect
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
-import com.bumptech.glide.Glide
-import com.cafedroid.android.devconnect.classes.Message
+import com.pusher.chatkit.messages.Message
 
-class MessagesAdapter constructor(context:Context, val messages: ArrayList<Message>): RecyclerView.Adapter<MessagesAdapter.MessageHolder>() {
+class MessagesAdapter constructor(context:Context?, val messages: ArrayList<Message>): RecyclerView.Adapter<MessagesAdapter.MessageHolder>() {
 
     val mContext=context
 
@@ -25,10 +24,11 @@ class MessagesAdapter constructor(context:Context, val messages: ArrayList<Messa
 
     override fun onBindViewHolder(msgHolder: MessageHolder, p1: Int) {
         val message= messages[p1]
-        msgHolder.messageTV.text=message.msgText
-        msgHolder.timeStampTV.text=message.dateString
-        Glide.with(mContext).load(message.senderImg).into(msgHolder.userImage)
-        msgHolder.userName.text=message.msgSender
+        msgHolder.messageTV.text=message.text
+        msgHolder.timeStampTV.text=message.createdAt
+        Log.e("MessageADAPTER",messages.size.toString())
+//        Glide.with(mContext).load(message.user!!.avatarURL).into(msgHolder.userImage)
+        msgHolder.userName.text= message.userId
     }
 
 
