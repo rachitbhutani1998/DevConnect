@@ -35,11 +35,12 @@
             android:layout_below="@id/user_profile_image"/>
 
     <ImageButton
+            android:id="@+id/sign_out_btn"
             android:layout_width="wrap_content"
             android:padding="5dp"
             android:layout_marginEnd="5dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_settings_black_24dp"
+            android:src="@drawable/ic_power_24dp"
             android:background="?android:selectableItemBackground"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"/>
