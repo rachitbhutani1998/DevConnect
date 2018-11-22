@@ -56,7 +56,7 @@ class ChatFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val messageList = MessageList(context)
-        messagesAdapter = MessagesAdapter(activity.applicationContext, messageList)
+        messagesAdapter = MessagesAdapter(activity.applicationContext, messageList,activity.chatKitUser)
 
         //If user is in a room
         if (activity.currentRoom != null) {

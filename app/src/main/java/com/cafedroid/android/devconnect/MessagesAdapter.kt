@@ -8,9 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import com.pusher.chatkit.CurrentUser
 import com.pusher.chatkit.messages.Message
 
-class MessagesAdapter constructor(context:Context?, val messages: ArrayList<Message>): RecyclerView.Adapter<MessagesAdapter.MessageHolder>() {
+class MessagesAdapter constructor(context:Context?, private val messages: ArrayList<Message>, private val sender:CurrentUser): RecyclerView.Adapter<MessagesAdapter.MessageHolder>() {
 
     val mContext=context
 
@@ -28,7 +29,10 @@ class MessagesAdapter constructor(context:Context?, val messages: ArrayList<Mess
         msgHolder.timeStampTV.text=message.createdAt
         Log.e("MessageADAPTER",messages.size.toString())
 //        Glide.with(mContext).load(message.user!!.avatarURL).into(msgHolder.userImage)
-        msgHolder.userName.text= message.userId
+        if (sender.id==message.userId)
+            msgHolder.userName.text="You"
+        else
+            msgHolder.userName.text= message.userId
     }
 
 
