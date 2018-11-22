@@ -1,9 +1,6 @@
 package com.cafedroid.android.devconnect
 
 
-import android.app.Activity
-import android.content.Context
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -13,8 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.cafedroid.android.devconnect.classes.MessageList
-import com.pusher.chatkit.CurrentUser
 import com.pusher.chatkit.messages.Direction
 import com.pusher.chatkit.messages.Message
 import com.pusher.chatkit.rooms.RoomListeners
@@ -55,7 +50,7 @@ class ChatFragment : Fragment() {
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        val messageList = MessageList(context)
+        val messageList = ArrayList<Message>()
         messagesAdapter = MessagesAdapter(activity.applicationContext, messageList,activity.chatKitUser)
 
         //If user is in a room
@@ -137,6 +132,5 @@ class ChatFragment : Fragment() {
         }
         return rootView
     }
-
 
 }

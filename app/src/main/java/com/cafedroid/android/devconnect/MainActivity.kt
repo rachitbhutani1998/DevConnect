@@ -1,7 +1,6 @@
 package com.cafedroid.android.devconnect
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -21,7 +20,6 @@ import android.view.View
 import android.widget.*
 import com.androidnetworking.AndroidNetworking
 import com.bumptech.glide.Glide
-import com.cafedroid.android.devconnect.classes.Users
 import com.pusher.chatkit.AndroidChatkitDependencies
 import com.pusher.chatkit.ChatManager
 import com.pusher.chatkit.ChatkitTokenProvider
@@ -75,13 +73,10 @@ class MainActivity : AppCompatActivity() {
         } else {
 
             val jsonObject = JSONObject(decoded(authTokenString))
-            val currentUsers = Users(
-                jsonObject.optString("id")
-                , jsonObject.optString("name")
-                , jsonObject.optString("avatar")
-            )
+            val currentUsers=User(jsonObject.optString("id"),"","",jsonObject.optString("name"),
+                jsonObject.optString("avatar"),null,false)
 
-            USER_ID = currentUsers.userName
+            USER_ID = currentUsers.id
 
 
             val onlineUserListView: ListView = findViewById(R.id.online_user_list)
@@ -132,8 +127,8 @@ class MainActivity : AppCompatActivity() {
                 alert.show()
             }
 
-            Glide.with(this).load(currentUsers.userImage).into(profileImageView)
-            profileNameView.text = currentUsers.fullName
+            Glide.with(this).load(currentUsers.avatarURL).into(profileImageView)
+            profileNameView.text = currentUsers.name
             val chatManager = ChatManager(
                 instanceLocator = INSTANCE_LOCATOR,
                 userId = USER_ID,
