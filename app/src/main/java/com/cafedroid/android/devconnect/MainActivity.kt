@@ -106,36 +106,6 @@ class MainActivity : AppCompatActivity() {
             }
             actionbar!!.title = "DevConnect"
 
-
-//        menu = mNavigationView.menu
-//        menu.add(123, 0, 0, "+ Add a team")
-
-//        mNavigationView.setNavigationItemSelectedListener { menuItem ->
-//            Log.e("MainActivity", menuItem.title.toString() + " " + menuItem.itemId)
-//            menuItem.isChecked = true
-//            when (menuItem.title) {
-//                "+ Add a team" -> {
-//                    val fragTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-//                    fragTransaction.addToBackStack(null)
-//                    fragTransaction.add(R.id.container, AddTeamDialog()).commit()
-//                    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-//                    menu.setGroupCheckable(123, true, true)
-//                }
-//                null -> {
-//                }
-//                else -> {
-//                    actionbar.title = menuItem.title
-//                    val bundle = Bundle()
-//                    bundle.putString("team_name", actionbar.title.toString())
-//                    chatFragment.arguments = bundle
-//                    supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()
-//                }
-//            }
-//            menu.setGroupCheckable(123, true, true)
-//            mDrawerLayout.closeDrawers()
-//            true
-//        }
-
             val header: View = mNavigationView.getHeaderView(0)
             val profileImageView: ImageView = header.findViewById(R.id.user_profile_image)
             val profileNameView: TextView = header.findViewById(R.id.user_profile_name)

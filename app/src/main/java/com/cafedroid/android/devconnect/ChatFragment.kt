@@ -60,12 +60,18 @@ class ChatFragment : Fragment() {
 
         //If user is in a room
         if (activity.currentRoom != null) {
+            emptyView.visibility = View.INVISIBLE
+            chatView.visibility = View.VISIBLE
             chatLoading.visibility=View.VISIBLE
             //Receive new messages
             activity.chatKitUser.subscribeToRoom(
                 room = activity.currentRoom!!,
                 listeners = RoomListeners(onMessage = { message ->
                     messageList.add(message)
+                    activity.runOnUiThread {
+                        messagesAdapter.notifyDataSetChanged()
+                        recyclerView.scrollToPosition(messageList.size - 1)
+                    }
                     Log.e("CHATTING", "RECEIVED.......${message.text}")
 
                 }),
@@ -86,14 +92,20 @@ class ChatFragment : Fragment() {
                         Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.name}")
                         chatLoading.visibility=View.INVISIBLE
                         messageList.addAll(result.value.reversed())
-                        messagesAdapter.notifyDataSetChanged()
+                        activity.runOnUiThread {
+                            messagesAdapter.notifyDataSetChanged()
+                            recyclerView.scrollToPosition(messageList.size - 1)
+                        }
                     } else if (result is Result.Failure)
                         Toast.makeText(context, result.error.reason, Toast.LENGTH_SHORT).show()
                 },
                 limit = 20
             )
-
-        } else Toast.makeText(context, "Current room is null", Toast.LENGTH_SHORT).show()
+            recyclerView.adapter = messagesAdapter
+        } else{
+            emptyView.visibility = View.VISIBLE
+            chatView.visibility = View.INVISIBLE
+        }
 
         //Send a message
         sendBtn.setOnClickListener { view ->
@@ -117,21 +129,11 @@ class ChatFragment : Fragment() {
                             }
                         })
                     editText.text.clear()
+                    recyclerView.adapter=messagesAdapter
                     recyclerView.scrollToPosition(messageList.size - 1)
                 }
 
             }
-        }
-
-        recyclerView.adapter = messagesAdapter
-
-        //Change the fragment when team changes
-        if (activity.supportActionBar?.title!! == "DevConnect") {
-            emptyView.visibility = View.VISIBLE
-            chatView.visibility = View.INVISIBLE
-        } else {
-            emptyView.visibility = View.INVISIBLE
-            chatView.visibility = View.VISIBLE
         }
         return rootView
     }
