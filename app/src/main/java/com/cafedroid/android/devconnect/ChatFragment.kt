@@ -22,8 +22,8 @@ import com.pusher.util.Result
  */
 class ChatFragment : Fragment() {
 
-    lateinit var sendBtn: ImageButton
-    lateinit var messagesAdapter:MessagesAdapter
+    private lateinit var sendBtn: ImageButton
+    private lateinit var messagesAdapter: MessagesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +34,7 @@ class ChatFragment : Fragment() {
         val emptyView: LinearLayout = rootView.findViewById(R.id.empty_view)
         val chatView: RelativeLayout = rootView.findViewById(R.id.chat_view)
         val editText: EditText = rootView.findViewById(R.id.message_field)
-        val chatLoading:ProgressBar=rootView.findViewById(R.id.loading_chat)
+        val chatLoading: ProgressBar = rootView.findViewById(R.id.loading_chat)
         val activity = activity as MainActivity
 
         val onlineUsers = ArrayList<User>()
@@ -46,18 +46,22 @@ class ChatFragment : Fragment() {
         activity.addOnlineUser(onlineUsers)
 
         val recyclerView: RecyclerView = rootView.findViewById(R.id.chat_messages)
+
         sendBtn = rootView.findViewById(R.id.send_btn)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val messageList = ArrayList<Message>()
-        messagesAdapter = MessagesAdapter(activity.applicationContext, messageList,activity.chatKitUser)
-
+        messagesAdapter = MessagesAdapter(activity.applicationContext, messageList, activity.chatKitUser)
+        recyclerView.addOnLayoutChangeListener { view, _, _, _, bottom, _, _, _, oldBottom ->
+            if (bottom<oldBottom)
+                view.postDelayed({ recyclerView.scrollToPosition(messageList.size - 1) }, 100)
+        }
         //If user is in a room
         if (activity.currentRoom != null) {
             emptyView.visibility = View.INVISIBLE
             chatView.visibility = View.VISIBLE
-            chatLoading.visibility=View.VISIBLE
+            chatLoading.visibility = View.VISIBLE
             //Receive new messages
             activity.chatKitUser.subscribeToRoom(
                 room = activity.currentRoom!!,
@@ -73,7 +77,7 @@ class ChatFragment : Fragment() {
                 callback = {
                     Toast.makeText(context, "Subsctibed", Toast.LENGTH_SHORT).show()
                 },
-                messageLimit = 1
+                messageLimit = 0
             )
 
 
@@ -85,7 +89,7 @@ class ChatFragment : Fragment() {
                     Log.e("CHATTING", "ok ok ok ok ok ok ok ok ok ok ok ok ok $result")
                     if (result is Result.Success) {
                         Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.name}")
-                        chatLoading.visibility=View.INVISIBLE
+                        chatLoading.visibility = View.INVISIBLE
                         messageList.addAll(result.value.reversed())
                         activity.runOnUiThread {
                             messagesAdapter.notifyDataSetChanged()
@@ -97,7 +101,7 @@ class ChatFragment : Fragment() {
                 limit = 20
             )
             recyclerView.adapter = messagesAdapter
-        } else{
+        } else {
             emptyView.visibility = View.VISIBLE
             chatView.visibility = View.INVISIBLE
         }
@@ -124,7 +128,7 @@ class ChatFragment : Fragment() {
                             }
                         })
                     editText.text.clear()
-                    recyclerView.adapter=messagesAdapter
+                    recyclerView.adapter = messagesAdapter
                     recyclerView.scrollToPosition(messageList.size - 1)
                 }
 

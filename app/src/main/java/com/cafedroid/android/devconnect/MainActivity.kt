@@ -29,6 +29,7 @@ import com.pusher.chatkit.users.User
 import com.pusher.util.Result
 import org.json.JSONObject
 import java.io.UnsupportedEncodingException
+import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
@@ -129,6 +130,19 @@ class MainActivity : AppCompatActivity() {
 
             Glide.with(this).load(currentUsers.avatarURL).into(profileImageView)
             profileNameView.text = currentUsers.name
+
+
+
+            roomsListView.setOnItemClickListener { _: AdapterView<*>, _: View, i: Int, _: Long ->
+                if (currentRoom != roomsList[i]) {
+                    currentRoom = roomsList[i]
+                    actionbar.title = currentRoom!!.name
+                    supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()
+                }
+                mDrawerLayout.closeDrawers()
+            }
+        }
+        thread {
             val chatManager = ChatManager(
                 instanceLocator = INSTANCE_LOCATOR,
                 userId = USER_ID,
@@ -139,27 +153,19 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             )
-            chatManager.connect { result ->
-                when (result) {
-                    is Result.Success -> {
-                        chatKitUser = result.value
-                        supportFragmentManager.beginTransaction().remove(splashFragment)
-                            .add(R.id.container, chatFragment).commit()
-                        mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+            runOnUiThread {
+                chatManager.connect { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            chatKitUser = result.value
+                            supportFragmentManager.beginTransaction().remove(splashFragment)
+                                .add(R.id.container, chatFragment).commit()
+                            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                        }
+                        is Result.Failure -> Log.e("ActivityDC", result.error.reason)
+                        else -> Log.e("ActivityDC", "Unknown Error")
                     }
-                    is Result.Failure -> Log.e("ActivityDC", result.error.reason)
-                    else -> Log.e("ActivityDC", "Unknown Error")
                 }
-            }
-
-
-            roomsListView.setOnItemClickListener { _: AdapterView<*>, _: View, i: Int, _: Long ->
-                if (currentRoom != roomsList[i]) {
-                    currentRoom = roomsList[i]
-                    actionbar.title = currentRoom!!.name
-                    supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()
-                }
-                mDrawerLayout.closeDrawers()
             }
         }
     }
@@ -230,5 +236,7 @@ class MainActivity : AppCompatActivity() {
         val decodedBytes = android.util.Base64.decode(strEncoded, Base64.URL_SAFE)
         return String(decodedBytes)
     }
+
+
 
 }
