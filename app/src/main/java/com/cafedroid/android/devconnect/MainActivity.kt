@@ -1,8 +1,10 @@
 package com.cafedroid.android.devconnect
 
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -74,8 +76,10 @@ class MainActivity : AppCompatActivity() {
         } else {
 
             val jsonObject = JSONObject(decoded(authTokenString))
-            val currentUsers=User(jsonObject.optString("id"),"","",jsonObject.optString("name"),
-                jsonObject.optString("avatar"),null,false)
+            val currentUsers = User(
+                jsonObject.optString("id"), "", "", jsonObject.optString("name"),
+                jsonObject.optString("avatar"), null, false
+            )
 
             USER_ID = currentUsers.id
 
@@ -105,24 +109,29 @@ class MainActivity : AppCompatActivity() {
             val header: View = mNavigationView.getHeaderView(0)
             val profileImageView: ImageView = header.findViewById(R.id.user_profile_image)
             val profileNameView: TextView = header.findViewById(R.id.user_profile_name)
-            val signOutBtn:ImageButton=header.findViewById(R.id.sign_out_btn)
-            signOutBtn.setOnClickListener{
+            val signOutBtn: ImageButton = header.findViewById(R.id.sign_out_btn)
+            signOutBtn.setOnClickListener {
 
-                val alert=AlertDialog.Builder(this)
+                val alert = AlertDialog.Builder(this)
                     .setTitle("Log Out?")
                     .setMessage("Are you sure you want to log out?")
-                    .setPositiveButton("I don't want to work") { dialogInterface, i ->
-                        val sharedPrefEditor=sharedPref.edit()
-                        with(sharedPrefEditor){
-                            putString("auth_token","Unavailable")
+                    .setPositiveButton("I don't want to work") { _, _ ->
+                        val sharedPrefEditor = sharedPref.edit()
+                        with(sharedPrefEditor) {
+                            putString("auth_token", "Unavailable")
                             apply()
                         }
                         val token: String = sharedPref.getString("auth_token", "Unavailable")
                         if (token == "Unavailable") {
-                            startActivity(Intent(this, AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                            startActivity(
+                                Intent(
+                                    this,
+                                    AuthActivity::class.java
+                                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                            )
                             finish()
                         }
-                    }.setNegativeButton("Keep Contributing"){dialogInterface, i ->
+                    }.setNegativeButton("Keep Contributing") { dialogInterface, i ->
                         dialogInterface.dismiss()
                     }.create()
                 alert.show()
@@ -133,41 +142,43 @@ class MainActivity : AppCompatActivity() {
 
 
 
-            roomsListView.setOnItemClickListener { _: AdapterView<*>, _: View, i: Int, _: Long ->
+            roomsListView.setOnItemClickListener { _: AdapterView<*>, v: View, i: Int, _: Long ->
                 if (currentRoom != roomsList[i]) {
                     currentRoom = roomsList[i]
+                    v.setBackgroundColor(Color.LTGRAY)
                     actionbar.title = currentRoom!!.name
                     supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()
                 }
                 mDrawerLayout.closeDrawers()
             }
-        }
-        thread {
-            val chatManager = ChatManager(
-                instanceLocator = INSTANCE_LOCATOR,
-                userId = USER_ID,
-                dependencies = AndroidChatkitDependencies(
-                    tokenProvider = ChatkitTokenProvider(
-                        endpoint = "https://ancient-temple-53657.herokuapp.com/api/auth/authenticate",
-                        userId = USER_ID
+            thread {
+                val chatManager = ChatManager(
+                    instanceLocator = INSTANCE_LOCATOR,
+                    userId = USER_ID,
+                    dependencies = AndroidChatkitDependencies(
+                        tokenProvider = ChatkitTokenProvider(
+                            endpoint = "https://ancient-temple-53657.herokuapp.com/api/auth/authenticate",
+                            userId = USER_ID
+                        )
                     )
                 )
-            )
-            runOnUiThread {
-                chatManager.connect { result ->
-                    when (result) {
-                        is Result.Success -> {
-                            chatKitUser = result.value
-                            supportFragmentManager.beginTransaction().remove(splashFragment)
-                                .add(R.id.container, chatFragment).commit()
-                            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                runOnUiThread {
+                    chatManager.connect { result ->
+                        when (result) {
+                            is Result.Success -> {
+                                chatKitUser = result.value
+                                supportFragmentManager.beginTransaction().remove(splashFragment)
+                                    .add(R.id.container, chatFragment).commit()
+                                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                            }
+                            is Result.Failure -> Log.e("ActivityDC", result.error.reason)
+                            else -> Log.e("ActivityDC", "Unknown Error")
                         }
-                        is Result.Failure -> Log.e("ActivityDC", result.error.reason)
-                        else -> Log.e("ActivityDC", "Unknown Error")
                     }
                 }
             }
         }
+
     }
 
 
@@ -181,8 +192,38 @@ class MainActivity : AppCompatActivity() {
                 openOnlineDrawer()
                 true
             }
+            R.id.menu_leave_team -> {
+                leaveCurrentTeam()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun leaveCurrentTeam() {
+        if (currentRoom != null) {
+            val alertDialog=AlertDialog.Builder(this)
+                .setTitle("Leave room?")
+                .setMessage("Are you sure you want to leave ${currentRoom!!.name} chat room?")
+                .setPositiveButton("Yeah, it is no more fun") {dialogInterface, i ->
+                    chatKitUser.leaveRoom(currentRoom!!, callback = { result ->
+                        when (result) {
+                            is Result.Success ->{
+                                currentRoom=null
+
+                                supportFragmentManager.beginTransaction().replace(R.id.container,ChatFragment()).commit()
+                                runOnUiThread { Toast.makeText(this, result.value, Toast.LENGTH_SHORT).show() }
+                            }
+                            is Result.Failure -> Toast.makeText(this, result.error.reason, Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                }
+                .setNegativeButton("I'll think about it"){dialogInterface, i ->
+                    dialogInterface.dismiss()
+                }
+                .create()
+            alertDialog.show()
+        } else Toast.makeText(this,"Join a team first.",Toast.LENGTH_SHORT).show()
     }
 
     override fun onBackPressed() {
@@ -236,7 +277,6 @@ class MainActivity : AppCompatActivity() {
         val decodedBytes = android.util.Base64.decode(strEncoded, Base64.URL_SAFE)
         return String(decodedBytes)
     }
-
 
 
 }

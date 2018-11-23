@@ -36,7 +36,7 @@ class ChatFragment : Fragment() {
         val editText: EditText = rootView.findViewById(R.id.message_field)
         val chatLoading: ProgressBar = rootView.findViewById(R.id.loading_chat)
         val activity = activity as MainActivity
-
+        Log.e("TAG",activity.supportActionBar!!.title.toString())
         val onlineUsers = ArrayList<User>()
         activity.roomsList.clear()
         activity.roomsList.addAll(activity.chatKitUser.rooms)
@@ -80,7 +80,6 @@ class ChatFragment : Fragment() {
                 messageLimit = 0
             )
 
-
             //Fetch Old messages when channel joined
             activity.chatKitUser.fetchMessages(
                 roomId = activity.currentRoom!!.id,
@@ -102,6 +101,7 @@ class ChatFragment : Fragment() {
             )
             recyclerView.adapter = messagesAdapter
         } else {
+            activity.supportActionBar!!.title="DevConnect"
             emptyView.visibility = View.VISIBLE
             chatView.visibility = View.INVISIBLE
         }

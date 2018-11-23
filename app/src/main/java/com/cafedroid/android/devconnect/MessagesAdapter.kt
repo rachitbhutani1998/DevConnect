@@ -10,6 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.pusher.chatkit.CurrentUser
 import com.pusher.chatkit.messages.Message
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MessagesAdapter constructor(context:Context?, private val messages: ArrayList<Message>, private val sender:CurrentUser): RecyclerView.Adapter<MessagesAdapter.MessageHolder>() {
 
@@ -26,11 +28,24 @@ class MessagesAdapter constructor(context:Context?, private val messages: ArrayL
     override fun onBindViewHolder(msgHolder: MessageHolder, p1: Int) {
         val message= messages[p1]
         msgHolder.messageTV.text=message.text
-        msgHolder.timeStampTV.text=message.createdAt
-        Log.e("MessageADAPTER",messages.size.toString())
+        val simpleDateFormat=SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
+        val date=Date(System.currentTimeMillis())
+        val fullDateString=simpleDateFormat.format(date)
+        val displayDate: String?
+
+        Log.e("Date","${fullDateString.split(" ")[0]} and ${message.createdAt.split("T")[0]} plus ${message.text}")
+
+        displayDate = if (fullDateString.split(" ")[0]==message.createdAt.split("T")[0])
+            "Today at ${message.createdAt.slice(IntRange(9,13))}"
+        else message.createdAt
+
+
+        msgHolder.timeStampTV.text=displayDate
 //        Glide.with(mContext).load(message.user!!.avatarURL).into(msgHolder.userImage)
-        if (sender.id==message.userId)
-            msgHolder.userName.text="You"
+        if (sender.id==message.userId) {
+            msgHolder.userName.text = mContext!!.getString(R.string.you)
+            msgHolder.messageTV.setBackgroundColor(mContext.resources.getColor(R.color.sentMessageBg))
+        }
         else
             msgHolder.userName.text= message.userId
     }

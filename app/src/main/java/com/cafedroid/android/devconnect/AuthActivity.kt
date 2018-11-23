@@ -22,6 +22,8 @@ import com.androidnetworking.interfaces.JSONArrayRequestListener
 import com.auth0.android.jwt.JWT
 import android.util.Base64.URL_SAFE
 import android.widget.ProgressBar
+import android.widget.TextView
+import org.w3c.dom.Text
 import java.io.UnsupportedEncodingException
 import java.nio.charset.Charset
 import java.util.*
@@ -30,11 +32,9 @@ import java.util.*
 class AuthActivity : AppCompatActivity() {
 
     val clientId: String = "3641e84228dcf2c013f7"
-    val clientSecret: String = "5b80b58068b439ce2c3ab86e0e8ee9f317ecd008"
-    val redirectURL: String = "localhost:3000/auth/github"
     val BASE_URL: String = "https://github.com/login/oauth/authorize"
     lateinit var progressSpinner:ProgressBar
-    lateinit var githubSignInBtn:ImageButton
+    lateinit var githubSignInBtn:TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

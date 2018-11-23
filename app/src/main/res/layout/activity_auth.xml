@@ -7,24 +7,46 @@
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
         tools:context=".AuthActivity">
+    <ImageView
+            android:layout_width="200dp"
+            android:id="@+id/dc_logo"
+            android:layout_marginTop="40dp"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:padding="10dp"
+            android:src="@mipmap/devc_icon"
+            android:contentDescription="@string/dc_description"/>
 
-    <ImageButton
-            android:id="@+id/github_signin_btn"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            android:tint="@android:color/white"
-            android:scaleType="centerCrop"
-            android:padding="70dp"
-            android:elevation="12dp"
-            android:background="?android:selectableItemBackground"
-            android:layout_centerInParent="true"
-            android:src="@drawable/github_600969"
-            android:contentDescription="@string/sign_in_button"/>
+    <TextView android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="15dp"
+              android:textSize="17sp"
+              android:textStyle="bold"
+              android:textColor="@android:color/black"
+              android:textAlignment="center"
+              android:layout_below="@id/dc_logo"
+                android:text="@string/dc_description"/>
 
     <ProgressBar
+            android:visibility="invisible"
             android:id="@+id/auth_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"/>
+            android:layout_centerHorizontal="true"
+            android:layout_margin="14dp"
+            android:layout_alignParentBottom="true"/>
+    <Button
+            android:layout_margin="10dp"
+            android:id="@+id/github_signin_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/github_mark_32px"
+            android:padding="12dp"
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            android:text="Continue with GITHUB"
+            android:background="#bfff"
+            android:textStyle="bold"
+            android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>

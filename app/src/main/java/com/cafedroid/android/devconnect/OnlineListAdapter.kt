@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.pusher.chatkit.rooms.Room
 import com.pusher.chatkit.users.User
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.ArrayList
@@ -30,4 +31,5 @@ class OnlineListAdapter internal constructor(context: Context, list: ArrayList<U
         }
         return listItemView
     }
+
 }
