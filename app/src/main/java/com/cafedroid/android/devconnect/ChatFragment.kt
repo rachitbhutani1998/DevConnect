@@ -69,7 +69,8 @@ class ChatFragment : Fragment() {
                     messageList.add(message)
                     activity.runOnUiThread {
                         messagesAdapter.notifyDataSetChanged()
-                        recyclerView.scrollToPosition(messageList.size - 1)
+                        recyclerView.invalidate()
+                        recyclerView.smoothScrollToPosition(messageList.size - 1)
                     }
                     Log.e("CHATTING", "RECEIVED.......${message.text}")
 
@@ -92,7 +93,7 @@ class ChatFragment : Fragment() {
                         messageList.addAll(result.value.reversed())
                         activity.runOnUiThread {
                             messagesAdapter.notifyDataSetChanged()
-                            recyclerView.scrollToPosition(messageList.size - 1)
+                            recyclerView.smoothScrollToPosition(messageList.size - 1)
                         }
                     } else if (result is Result.Failure)
                         Toast.makeText(context, result.error.reason, Toast.LENGTH_SHORT).show()
@@ -129,7 +130,7 @@ class ChatFragment : Fragment() {
                         })
                     editText.text.clear()
                     recyclerView.adapter = messagesAdapter
-                    recyclerView.scrollToPosition(messageList.size - 1)
+                    recyclerView.smoothScrollToPosition(messageList.size - 1)
                 }
 
             }

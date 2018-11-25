@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:app="http://schemas.andro id.com/apk/res-auto"
-                android:layout_width="match_parent"
-                android:padding="10dp"
-                android:background="@drawable/received_msg"
-                android:layout_margin="10dp"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="70dp"
                 android:layout_height="wrap_content">
     <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:gravity="center_vertical"
             android:layout_height="wrap_content"
             android:id="@+id/u_details"
@@ -34,24 +34,23 @@
     </LinearLayout>
 
     <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/msg_text"
             android:layout_marginStart="35dp"
+            android:background="@drawable/received_msg"
             android:textSize="13sp"
             android:textColor="@android:color/black"
-            android:text="Lorem ispum ya ipsum Ipsum Lorem suck some to"
-            android:paddingStart="0dp"
-            android:paddingEnd="10dp"
+            android:text="Lorem ispum ya ipsum Ipsum Loafialjalfjlajfrem suck some to"
+            android:padding="10dp"
             android:layout_below="@id/u_details"/>
     <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAlignment="viewEnd"
+            android:gravity="end"
             android:id="@+id/timestamp_tv"
             android:layout_below="@id/msg_text"
             android:text="Today at 7:45 PM"
             android:singleLine="true"
-            android:layout_marginStart="5dp"
             android:textSize="12sp"/>
 </RelativeLayout>

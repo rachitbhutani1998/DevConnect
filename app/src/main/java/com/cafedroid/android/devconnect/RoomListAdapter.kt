@@ -25,12 +25,7 @@ class RoomListAdapter internal constructor(context: Context, val list: ArrayList
         if (thisRoom != null) {
             roomNameView.text=thisRoom.name
         }
-
         return listItemView
     }
 
-    override fun setNotifyOnChange(notifyOnChange: Boolean) {
-        super.setNotifyOnChange(notifyOnChange)
-        Toast.makeText(context,"Notified",Toast.LENGTH_SHORT).show()
-    }
 }

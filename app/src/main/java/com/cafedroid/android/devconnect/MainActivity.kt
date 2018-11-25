@@ -1,7 +1,6 @@
 package com.cafedroid.android.devconnect
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
@@ -131,7 +130,7 @@ class MainActivity : AppCompatActivity() {
                             )
                             finish()
                         }
-                    }.setNegativeButton("Keep Contributing") { dialogInterface, i ->
+                    }.setNegativeButton("Keep Contributing") { dialogInterface, _ ->
                         dialogInterface.dismiss()
                     }.create()
                 alert.show()
