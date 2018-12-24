@@ -70,7 +70,7 @@ class ChatFragment : Fragment() {
                     activity.runOnUiThread {
                         messagesAdapter.notifyDataSetChanged()
                         recyclerView.invalidate()
-                        recyclerView.smoothScrollToPosition(messageList.size - 1)
+                        recyclerView.scrollToPosition(messageList.size - 1)
                     }
                     Log.e("CHATTING", "RECEIVED.......${message.text}")
 
@@ -86,20 +86,21 @@ class ChatFragment : Fragment() {
                 roomId = activity.currentRoom!!.id,
                 direction = Direction.OLDER_FIRST,
                 callback = { result ->
-                    Log.e("CHATTING", "ok ok ok ok ok ok ok ok ok ok ok ok ok $result")
+                    Log.e("CHATTING", " $result")
                     if (result is Result.Success) {
                         Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.name}")
-                        chatLoading.visibility = View.INVISIBLE
                         messageList.addAll(result.value.reversed())
                         activity.runOnUiThread {
+                            chatLoading.visibility = View.INVISIBLE
                             messagesAdapter.notifyDataSetChanged()
-                            recyclerView.smoothScrollToPosition(messageList.size - 1)
+                            recyclerView.scrollToPosition(messageList.size - 1)
                         }
                     } else if (result is Result.Failure)
                         Toast.makeText(context, result.error.reason, Toast.LENGTH_SHORT).show()
                 },
                 limit = 20
             )
+
             recyclerView.adapter = messagesAdapter
         } else {
             activity.supportActionBar!!.title="DevConnect"
