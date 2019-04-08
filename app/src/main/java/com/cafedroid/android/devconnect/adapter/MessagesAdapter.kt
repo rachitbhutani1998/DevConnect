@@ -1,17 +1,15 @@
-package com.cafedroid.android.devconnect
+package com.cafedroid.android.devconnect.adapter
 
 import android.content.Context
-import android.support.design.R.attr.snackbarStyle
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
+import com.cafedroid.android.devconnect.R
 import com.pusher.chatkit.CurrentUser
 import com.pusher.chatkit.messages.Message
-import org.joda.time.format.DateTimeFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,9 +25,21 @@ class MessagesAdapter constructor(
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): MessageHolder {
         Log.e("ADAPTER", "message by $p1 and ${sender.id}")
         return if (p1 == 0)
-            MessageHolder(LayoutInflater.from(mContext).inflate(R.layout.sent_msg_layout, p0, false))
+            MessageHolder(
+                LayoutInflater.from(mContext).inflate(
+                    R.layout.sent_msg_layout,
+                    p0,
+                    false
+                )
+            )
         else
-            MessageHolder(LayoutInflater.from(mContext).inflate(R.layout.received_msg_layout, p0, false))
+            MessageHolder(
+                LayoutInflater.from(mContext).inflate(
+                    R.layout.received_msg_layout,
+                    p0,
+                    false
+                )
+            )
     }
 
     override fun getItemCount(): Int {

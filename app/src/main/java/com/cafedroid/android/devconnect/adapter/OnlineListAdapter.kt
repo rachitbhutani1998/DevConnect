@@ -1,4 +1,4 @@
-package com.cafedroid.android.devconnect
+package com.cafedroid.android.devconnect.adapter
 
 import android.content.Context
 import android.util.Log
@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.pusher.chatkit.rooms.Room
+import com.cafedroid.android.devconnect.R
 import com.pusher.chatkit.users.User
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.ArrayList

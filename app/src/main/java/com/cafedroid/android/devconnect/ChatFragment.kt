@@ -10,6 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.cafedroid.android.devconnect.adapter.MessagesAdapter
+import com.cafedroid.android.devconnect.models.DevRoom
 import com.pusher.chatkit.messages.Direction
 import com.pusher.chatkit.messages.Message
 import com.pusher.chatkit.rooms.RoomListeners
@@ -36,10 +38,12 @@ class ChatFragment : Fragment() {
         val editText: EditText = rootView.findViewById(R.id.message_field)
         val chatLoading: ProgressBar = rootView.findViewById(R.id.loading_chat)
         val activity = activity as MainActivity
-        Log.e("TAG",activity.supportActionBar!!.title.toString())
+        Log.e("TAG", activity.supportActionBar!!.title.toString())
         val onlineUsers = ArrayList<User>()
         activity.roomsList.clear()
-        activity.roomsList.addAll(activity.chatKitUser.rooms)
+        for (room in activity.chatKitUser.rooms) {
+            activity.roomsList.add(DevRoom(room, false))
+        }
         activity.roomListAdapter.notifyDataSetChanged()
 
         //TODO: Fetch Online Users
@@ -52,9 +56,13 @@ class ChatFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         val messageList = ArrayList<Message>()
-        messagesAdapter = MessagesAdapter(activity.applicationContext, messageList, activity.chatKitUser)
+        messagesAdapter = MessagesAdapter(
+            activity.applicationContext,
+            messageList,
+            activity.chatKitUser
+        )
         recyclerView.addOnLayoutChangeListener { view, _, _, _, bottom, _, _, _, oldBottom ->
-            if (bottom<oldBottom)
+            if (bottom < oldBottom)
                 view.postDelayed({ recyclerView.scrollToPosition(messageList.size - 1) }, 100)
         }
         //If user is in a room
@@ -64,7 +72,7 @@ class ChatFragment : Fragment() {
             chatLoading.visibility = View.VISIBLE
             //Receive new messages
             activity.chatKitUser.subscribeToRoom(
-                room = activity.currentRoom!!,
+                room = activity.currentRoom!!.room,
                 listeners = RoomListeners(onMessage = { message ->
                     messageList.add(message)
                     activity.runOnUiThread {
@@ -83,12 +91,12 @@ class ChatFragment : Fragment() {
 
             //Fetch Old messages when channel joined
             activity.chatKitUser.fetchMessages(
-                roomId = activity.currentRoom!!.id,
+                roomId = activity.currentRoom!!.room.id,
                 direction = Direction.OLDER_FIRST,
                 callback = { result ->
                     Log.e("CHATTING", " $result")
                     if (result is Result.Success) {
-                        Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.name}")
+                        Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.room.name}")
                         messageList.addAll(result.value.reversed())
                         activity.runOnUiThread {
                             chatLoading.visibility = View.INVISIBLE
@@ -103,7 +111,7 @@ class ChatFragment : Fragment() {
 
             recyclerView.adapter = messagesAdapter
         } else {
-            activity.supportActionBar!!.title="DevConnect"
+            activity.supportActionBar!!.title = "DevConnect"
             emptyView.visibility = View.VISIBLE
             chatView.visibility = View.INVISIBLE
         }
@@ -113,7 +121,7 @@ class ChatFragment : Fragment() {
             if (!editText.text.isEmpty()) {
                 if (activity.currentRoom != null) {
                     activity.chatKitUser.sendMessage(
-                        activity.currentRoom!!,
+                        activity.currentRoom!!.room,
                         editText.text.toString(),
                         callback = { result ->
                             when (result) {
@@ -131,7 +139,7 @@ class ChatFragment : Fragment() {
                         })
                     editText.text.clear()
                     recyclerView.adapter = messagesAdapter
-                    recyclerView.smoothScrollToPosition(messageList.size - 1)
+                    recyclerView.scrollToPosition(messageList.size - 1)
                 }
 
             }

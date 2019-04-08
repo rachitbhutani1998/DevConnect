@@ -1,8 +1,6 @@
 package com.cafedroid.android.devconnect
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -21,11 +19,16 @@ import android.view.View
 import android.widget.*
 import com.androidnetworking.AndroidNetworking
 import com.bumptech.glide.Glide
+import com.cafedroid.android.devconnect.adapter.OnlineListAdapter
+import com.cafedroid.android.devconnect.adapter.RoomListAdapter
+import com.cafedroid.android.devconnect.models.DevRoom
+import com.cafedroid.android.devconnect.utils.APIResponse
+import com.cafedroid.android.devconnect.utils.Constants
+import com.cafedroid.android.devconnect.utils.PrefConfig
 import com.pusher.chatkit.AndroidChatkitDependencies
 import com.pusher.chatkit.ChatManager
 import com.pusher.chatkit.ChatkitTokenProvider
 import com.pusher.chatkit.CurrentUser
-import com.pusher.chatkit.rooms.Room
 import com.pusher.chatkit.users.User
 import com.pusher.util.Result
 import org.json.JSONObject
@@ -44,43 +47,40 @@ class MainActivity : AppCompatActivity() {
     private val chatFragment: Fragment = ChatFragment()
 
     private lateinit var onlineUserList: ArrayList<User>
-    lateinit var roomsList: ArrayList<Room>
+    lateinit var roomsList: ArrayList<DevRoom>
 
     private lateinit var onlineAdapter: OnlineListAdapter
     lateinit var roomListAdapter: RoomListAdapter
 
-    var currentRoom: Room? = null
+    var currentRoom: DevRoom? = null
     lateinit var chatKitUser: CurrentUser
-    lateinit var sharedPref: SharedPreferences
     lateinit var USER_ID: String
-    val INSTANCE_LOCATOR: String = "v1:us1:3dd62a71-d604-4985-bbb9-5965ea8bb128"
+
+    lateinit var config: PrefConfig
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.e("Main", "started")
         supportFragmentManager.beginTransaction().add(R.id.container, splashFragment).commit()
         mDrawerLayout = findViewById(R.id.main_drawer)
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        Log.e("Main", "splashed")
         AndroidNetworking.initialize(applicationContext)
-
         mNavigationView = findViewById(R.id.nav_view)
-        sharedPref = this.getSharedPreferences("TOKEN", Context.MODE_PRIVATE) ?: return
-        val authTokenString: String = sharedPref.getString("auth_token", "Unavailable")
-        if (authTokenString == "Unavailable") {
+        config = PrefConfig.getInstance(this)
+        val authTokenString: String? = config.getString(PrefConfig.AUTH_TOKEN, null)
+        if (authTokenString == null) {
             startActivity(Intent(this, AuthActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             finish()
         } else {
 
             val jsonObject = JSONObject(decoded(authTokenString))
-            val currentUsers = User(
-                jsonObject.optString("id"), "", "", jsonObject.optString("name"),
-                jsonObject.optString("avatar"), null, false
+            val currentUser = User(
+                jsonObject.optString(APIResponse.KEY_ID), "", "", jsonObject.optString(APIResponse.KEY_NAME),
+                jsonObject.optString(APIResponse.KEY_AVATAR), null, false
             )
 
-            USER_ID = currentUsers.id
+            USER_ID = currentUser.id
 
 
             val onlineUserListView: ListView = findViewById(R.id.online_user_list)
@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity() {
                 setDisplayHomeAsUpEnabled(true)
                 setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp)
             }
-            actionbar!!.title = "DevConnect"
+            actionbar!!.title = getText(R.string.app_name)
 
             val header: View = mNavigationView.getHeaderView(0)
             val profileImageView: ImageView = header.findViewById(R.id.user_profile_image)
@@ -115,48 +115,41 @@ class MainActivity : AppCompatActivity() {
                     .setTitle("Log Out?")
                     .setMessage("Are you sure you want to log out?")
                     .setPositiveButton("I don't want to work") { _, _ ->
-                        val sharedPrefEditor = sharedPref.edit()
-                        with(sharedPrefEditor) {
-                            putString("auth_token", "Unavailable")
-                            apply()
-                        }
-                        val token: String = sharedPref.getString("auth_token", "Unavailable")
-                        if (token == "Unavailable") {
-                            startActivity(
-                                Intent(
-                                    this,
-                                    AuthActivity::class.java
-                                ).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                            )
-                            finish()
-                        }
+                        performLogOut()
                     }.setNegativeButton("Keep Contributing") { dialogInterface, _ ->
                         dialogInterface.dismiss()
                     }.create()
                 alert.show()
             }
 
-            Glide.with(this).load(currentUsers.avatarURL).into(profileImageView)
-            profileNameView.text = currentUsers.name
+            Glide.with(this).load(currentUser.avatarURL).into(profileImageView)
+            profileNameView.text = currentUser.name
 
 
 
             roomsListView.setOnItemClickListener { _: AdapterView<*>, v: View, i: Int, _: Long ->
-                if (currentRoom != roomsList[i]) {
+                if (currentRoom?.room != roomsList[i].room) {
+                    if (currentRoom != null)
+                        roomsList[roomsList.indexOf(currentRoom!!)].isSelected = false
                     currentRoom = roomsList[i]
+                    roomsList[i].isSelected = true
                     v.setBackgroundColor(Color.LTGRAY)
-                    actionbar.title = currentRoom!!.name
+                    actionbar.title = currentRoom!!.room.name
                     supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()
                 }
                 mDrawerLayout.closeDrawers()
             }
             thread {
                 val chatManager = ChatManager(
-                    instanceLocator = INSTANCE_LOCATOR,
+                    instanceLocator = Constants.INSTANCE_LOCATOR,
                     userId = USER_ID,
                     dependencies = AndroidChatkitDependencies(
                         tokenProvider = ChatkitTokenProvider(
-                            endpoint = "https://ancient-temple-53657.herokuapp.com/api/auth/authenticate",
+                            endpoint =
+                            Constants.BASE_SERVER_URL +
+                                    Constants.PATH_API +
+                                    Constants.PATH_AUTH +
+                                    Constants.PATH_AUTHENTICATE,
                             userId = USER_ID
                         )
                     )
@@ -180,6 +173,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    private fun performLogOut() {
+        config.clearPreferences()
+    }
+
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
@@ -201,28 +198,29 @@ class MainActivity : AppCompatActivity() {
 
     private fun leaveCurrentTeam() {
         if (currentRoom != null) {
-            val alertDialog=AlertDialog.Builder(this)
+            val alertDialog = AlertDialog.Builder(this)
                 .setTitle("Leave room?")
-                .setMessage("Are you sure you want to leave ${currentRoom!!.name} chat room?")
-                .setPositiveButton("Yeah, it is no more fun") {dialogInterface, i ->
-                    chatKitUser.leaveRoom(currentRoom!!, callback = { result ->
+                .setMessage("Are you sure you want to leave ${currentRoom!!.room.name} chat room?")
+                .setPositiveButton("Yeah, it is no more fun") { dialogInterface, i ->
+                    chatKitUser.leaveRoom(currentRoom!!.room, callback = { result ->
                         when (result) {
-                            is Result.Success ->{
-                                currentRoom=null
+                            is Result.Success -> {
+                                currentRoom = null
 
-                                supportFragmentManager.beginTransaction().replace(R.id.container,ChatFragment()).commit()
+                                supportFragmentManager.beginTransaction().replace(R.id.container, ChatFragment())
+                                    .commit()
                                 runOnUiThread { Toast.makeText(this, result.value, Toast.LENGTH_SHORT).show() }
                             }
                             is Result.Failure -> Toast.makeText(this, result.error.reason, Toast.LENGTH_SHORT).show()
                         }
                     })
                 }
-                .setNegativeButton("I'll think about it"){dialogInterface, i ->
+                .setNegativeButton("I'll think about it") { dialogInterface, i ->
                     dialogInterface.dismiss()
                 }
                 .create()
             alertDialog.show()
-        } else Toast.makeText(this,"Join a team first.",Toast.LENGTH_SHORT).show()
+        } else Toast.makeText(this, "Join a team first.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onBackPressed() {
