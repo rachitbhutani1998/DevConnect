@@ -17,7 +17,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import com.androidnetworking.AndroidNetworking
 import com.bumptech.glide.Glide
 import com.cafedroid.android.devconnect.adapter.OnlineListAdapter
 import com.cafedroid.android.devconnect.adapter.RoomListAdapter
@@ -38,7 +37,6 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var menu: Menu
     lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mNavigationView: NavigationView
 
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     var currentRoom: DevRoom? = null
     lateinit var chatKitUser: CurrentUser
-    lateinit var USER_ID: String
+    private lateinit var userId: String
 
     lateinit var config: PrefConfig
 
@@ -65,7 +63,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().add(R.id.container, splashFragment).commit()
         mDrawerLayout = findViewById(R.id.main_drawer)
         mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
-        AndroidNetworking.initialize(applicationContext)
         mNavigationView = findViewById(R.id.nav_view)
         config = PrefConfig.getInstance(this)
         val authTokenString: String? = config.getString(PrefConfig.AUTH_TOKEN, null)
@@ -80,7 +77,7 @@ class MainActivity : AppCompatActivity() {
                 jsonObject.optString(APIResponse.KEY_AVATAR), null, false
             )
 
-            USER_ID = currentUser.id
+            userId = currentUser.id
 
 
             val onlineUserListView: ListView = findViewById(R.id.online_user_list)
@@ -142,7 +139,7 @@ class MainActivity : AppCompatActivity() {
             thread {
                 val chatManager = ChatManager(
                     instanceLocator = Constants.INSTANCE_LOCATOR,
-                    userId = USER_ID,
+                    userId = userId,
                     dependencies = AndroidChatkitDependencies(
                         tokenProvider = ChatkitTokenProvider(
                             endpoint =
@@ -150,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                                     Constants.PATH_API +
                                     Constants.PATH_AUTH +
                                     Constants.PATH_AUTHENTICATE,
-                            userId = USER_ID
+                            userId = userId
                         )
                     )
                 )
