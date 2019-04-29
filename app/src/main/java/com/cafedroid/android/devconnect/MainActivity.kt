@@ -17,10 +17,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.bumptech.glide.Glide
 import com.cafedroid.android.devconnect.adapter.RoomListAdapter
 import com.cafedroid.android.devconnect.models.DevRoom
@@ -107,23 +104,24 @@ class MainActivity : AppCompatActivity() {
             val header: View = mNavigationView.getHeaderView(0)
             val profileImageView: ImageView = header.findViewById(R.id.user_profile_image)
             val profileNameView: TextView = header.findViewById(R.id.user_profile_name)
-            val signOutBtn: ImageButton = header.findViewById(R.id.sign_out_btn)
-            signOutBtn.setOnClickListener {
+            val moreOptions: ImageButton = header.findViewById(R.id.sign_out_btn)
+            moreOptions.setOnClickListener {
 
-                val alert = AlertDialog.Builder(this)
-                    .setTitle("Log Out?")
-                    .setMessage("Are you sure you want to log out?")
-                    .setPositiveButton("I don't want to work") { _, _ ->
-                        performLogOut()
-                    }.setNegativeButton("Keep Contributing") { dialogInterface, _ ->
-                        dialogInterface.dismiss()
-                    }.create()
-                alert.show()
+                val popupMenu = PopupMenu(this, moreOptions)
+                popupMenu.inflate(R.menu.popup_header_menu)
+                popupMenu.setOnMenuItemClickListener { item ->
+                    if (item.itemId == R.id.menu_leave_team)
+                        leaveCurrentTeam()
+                    popupMenu.dismiss()
+                    mDrawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                popupMenu.show()
             }
 
             Glide.with(this).load(currentUser.avatarURL).into(profileImageView)
             profileNameView.text = currentUser.name
-            roomListAdapter = RoomListAdapter(this,roomsList)
+            roomListAdapter = RoomListAdapter(this, roomsList)
 
             roomsListView.layoutManager = LinearLayoutManager(this)
 
@@ -156,6 +154,18 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    }
+
+    private fun logOut() {
+        val alert = AlertDialog.Builder(this)
+            .setTitle("Log Out?")
+            .setMessage("Are you sure you want to log out?")
+            .setPositiveButton("I don't want to work") { _, _ ->
+                performLogOut()
+            }.setNegativeButton("Keep Contributing") { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }.create()
+        alert.show()
     }
 
     @Throws(SocketTimeoutException::class)
@@ -208,12 +218,8 @@ class MainActivity : AppCompatActivity() {
                 openDrawer()
                 true
             }
-//            R.id.open_online_users -> {
-//                openOnlineDrawer()
-//                true
-//            }
-            R.id.menu_leave_team -> {
-                leaveCurrentTeam()
+            R.id.log_out -> {
+                logOut()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -231,7 +237,7 @@ class MainActivity : AppCompatActivity() {
                             is Result.Success -> {
                                 currentRoom = null
 
-                                supportFragmentManager.beginTransaction().replace(R.id.container, ChatFragment())
+                                supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment)
                                     .commit()
                                 runOnUiThread { Toast.makeText(this, result.value, Toast.LENGTH_SHORT).show() }
                             }
@@ -250,7 +256,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
             mDrawerLayout.closeDrawer(GravityCompat.START)
-            mDrawerLayout.closeDrawer(GravityCompat.END)
+//            mDrawerLayout.closeDrawer(GravityCompat.END)
         } else {
             super.onBackPressed()
             val size = mNavigationView.menu.size()
