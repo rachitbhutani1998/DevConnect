@@ -1,7 +1,6 @@
 package com.cafedroid.android.devconnect
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.NavigationView
 import android.support.v4.app.Fragment
@@ -10,15 +9,19 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.app.ActionBar
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.*
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
-import com.cafedroid.android.devconnect.adapter.OnlineListAdapter
 import com.cafedroid.android.devconnect.adapter.RoomListAdapter
 import com.cafedroid.android.devconnect.models.DevRoom
 import com.cafedroid.android.devconnect.utils.APIResponse
@@ -32,11 +35,14 @@ import com.pusher.chatkit.users.User
 import com.pusher.util.Result
 import org.json.JSONObject
 import java.io.UnsupportedEncodingException
+import java.net.SocketTimeoutException
 import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
 
+    private val TAG = "MainActivity"
+    private var retry = 1
     lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mNavigationView: NavigationView
 
@@ -44,10 +50,10 @@ class MainActivity : AppCompatActivity() {
     private val splashFragment: Fragment = SplashFragment()
     private val chatFragment: Fragment = ChatFragment()
 
-    private lateinit var onlineUserList: ArrayList<User>
+    //    private lateinit var onlineUserList: ArrayList<User>
     lateinit var roomsList: ArrayList<DevRoom>
 
-    private lateinit var onlineAdapter: OnlineListAdapter
+    //    private lateinit var onlineAdapter: OnlineListAdapter
     lateinit var roomListAdapter: RoomListAdapter
 
     var currentRoom: DevRoom? = null
@@ -55,6 +61,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userId: String
 
     lateinit var config: PrefConfig
+    lateinit var roomsListView: RecyclerView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,17 +87,12 @@ class MainActivity : AppCompatActivity() {
             userId = currentUser.id
 
 
-            val onlineUserListView: ListView = findViewById(R.id.online_user_list)
-            onlineUserListView.emptyView = findViewById(R.id.empty_view_users)
-            onlineUserList = ArrayList()
+//            val onlineUserListView: ListView = findViewById(R.id.online_user_list)
+//            onlineUserListView.emptyView = findViewById(R.id.empty_view_users)
+//            onlineUserList = ArrayList()
 
-            val roomsListView: ListView = findViewById(R.id.rooms_nav_lv)
+            roomsListView = findViewById(R.id.rooms_nav_lv)
             roomsList = ArrayList()
-            roomListAdapter = RoomListAdapter(this, roomsList)
-            roomsListView.adapter = roomListAdapter
-
-            onlineAdapter = OnlineListAdapter(this, onlineUserList)
-            onlineUserListView.adapter = onlineAdapter
 
             val toolbar: Toolbar = findViewById(R.id.toolbar)
             setSupportActionBar(toolbar)
@@ -121,53 +123,78 @@ class MainActivity : AppCompatActivity() {
 
             Glide.with(this).load(currentUser.avatarURL).into(profileImageView)
             profileNameView.text = currentUser.name
+            roomListAdapter = RoomListAdapter(this,roomsList)
 
+            roomsListView.layoutManager = LinearLayoutManager(this)
 
-
-            roomsListView.setOnItemClickListener { _: AdapterView<*>, v: View, i: Int, _: Long ->
-                if (currentRoom?.room != roomsList[i].room) {
-                    if (currentRoom != null)
-                        roomsList[roomsList.indexOf(currentRoom!!)].isSelected = false
-                    currentRoom = roomsList[i]
-                    roomsList[i].isSelected = true
-                    v.setBackgroundColor(Color.LTGRAY)
+            val roomChangedCallBack = object : RoomChangedCallback {
+                override fun onRoomClicked(pos: Int) {
+                    if (currentRoom != null && currentRoom != roomsList[pos]) {
+                        currentRoom!!.isSelected = false
+                    }
+                    currentRoom = roomsList[pos]
+                    roomListAdapter.notifyDataSetChanged()
                     actionbar.title = currentRoom!!.room.name
                     supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()
+                    mDrawerLayout.closeDrawers()
                 }
-                mDrawerLayout.closeDrawers()
+
             }
-            thread {
-                val chatManager = ChatManager(
-                    instanceLocator = Constants.INSTANCE_LOCATOR,
-                    userId = userId,
-                    dependencies = AndroidChatkitDependencies(
-                        tokenProvider = ChatkitTokenProvider(
-                            endpoint =
-                            Constants.BASE_SERVER_URL +
-                                    Constants.PATH_API +
-                                    Constants.PATH_AUTH +
-                                    Constants.PATH_AUTHENTICATE,
-                            userId = userId
-                        )
+            roomListAdapter.callback = roomChangedCallBack
+            roomsListView.adapter = roomListAdapter
+
+            try {
+                connectChatManager()
+            } catch (e: SocketTimeoutException) {
+                Log.e(TAG, "Retry count: $retry")
+                retry++
+                if (retry <= Constants.MAX_RETRY_COUNT)
+                    connectChatManager()
+                else Toast
+                    .makeText(this, "Unable to connect the chat, Try again later", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+
+    }
+
+    @Throws(SocketTimeoutException::class)
+    private fun connectChatManager() {
+        thread {
+            val chatManager = ChatManager(
+                instanceLocator = Constants.INSTANCE_LOCATOR,
+                userId = userId,
+                dependencies = AndroidChatkitDependencies(
+                    tokenProvider = ChatkitTokenProvider(
+                        endpoint =
+                        Constants.BASE_SERVER_URL +
+                                Constants.PATH_API +
+                                Constants.PATH_AUTH +
+                                Constants.PATH_AUTHENTICATE,
+                        userId = userId
                     )
                 )
-                runOnUiThread {
-                    chatManager.connect { result ->
-                        when (result) {
-                            is Result.Success -> {
-                                chatKitUser = result.value
-                                supportFragmentManager.beginTransaction().remove(splashFragment)
-                                    .add(R.id.container, chatFragment).commit()
-                                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
-                            }
-                            is Result.Failure -> Log.e("ActivityDC", result.error.reason)
-                            else -> Log.e("ActivityDC", "Unknown Error")
+            )
+            runOnUiThread {
+                chatManager.connect { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            chatKitUser = result.value
+                            supportFragmentManager.beginTransaction().remove(splashFragment)
+                                .add(R.id.container, chatFragment).commit()
+                            mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
                         }
+                        is Result.Failure -> Log.e("ActivityDC", result.error.reason)
+                        else -> Log.e("ActivityDC", "Unknown Error")
                     }
                 }
             }
         }
 
+    }
+
+    interface RoomChangedCallback {
+        fun onRoomClicked(pos: Int)
     }
 
     private fun performLogOut() {
@@ -181,10 +208,10 @@ class MainActivity : AppCompatActivity() {
                 openDrawer()
                 true
             }
-            R.id.open_online_users -> {
-                openOnlineDrawer()
-                true
-            }
+//            R.id.open_online_users -> {
+//                openOnlineDrawer()
+//                true
+//            }
             R.id.menu_leave_team -> {
                 leaveCurrentTeam()
                 true
@@ -238,21 +265,14 @@ class MainActivity : AppCompatActivity() {
         mDrawerLayout.openDrawer(GravityCompat.START)
     }
 
-    fun openOnlineDrawer(v: View? = null) {
-        mDrawerLayout.openDrawer(GravityCompat.END)
-    }
+//    fun openOnlineDrawer(v: View? = null) {
+//        mDrawerLayout.openDrawer(GravityCompat.END)
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.home_menu, menu)
         return true
     }
-
-    fun addOnlineUser(onlineUserListUpdated: ArrayList<User>) {
-        onlineUserList.clear()
-        onlineUserList.addAll(onlineUserListUpdated)
-        onlineAdapter.notifyDataSetChanged()
-    }
-
 
     //Decoding JWT code
     @Throws(Exception::class)

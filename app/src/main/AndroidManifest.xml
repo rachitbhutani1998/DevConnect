@@ -13,6 +13,10 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
+        <meta-data
+                android:name="io.fabric.ApiKey"
+                android:value="0f6fd64cbd9ee641fdcb02cddd5c748ad37f7e86"/>
+
         <activity
                 android:name=".MainActivity"
                 android:theme="@style/AppTheme"
@@ -26,8 +30,10 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="https" android:host="admiring-snyder-dead31.netlify.com" android:pathPrefix="/team"/>
-                <data android:scheme="https" android:host="admiring-snyder-dead31.netlify.com" android:pathPrefix="/invite"/>
+                <data android:scheme="https" android:host="admiring-snyder-dead31.netlify.com"
+                      android:pathPrefix="/team"/>
+                <data android:scheme="https" android:host="admiring-snyder-dead31.netlify.com"
+                      android:pathPrefix="/invite"/>
             </intent-filter>
         </activity>
         <activity android:name=".AuthActivity" android:theme="@style/AppThemeActionBar">
@@ -35,7 +41,8 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:scheme="https" android:host="admiring-snyder-dead31.netlify.com" android:path="/auth/github"/>
+                <data android:scheme="https" android:host="admiring-snyder-dead31.netlify.com"
+                      android:path="/auth/github"/>
             </intent-filter>
         </activity>
     </application>

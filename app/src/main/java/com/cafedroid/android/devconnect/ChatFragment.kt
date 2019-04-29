@@ -15,7 +15,6 @@ import com.cafedroid.android.devconnect.models.DevRoom
 import com.pusher.chatkit.messages.Direction
 import com.pusher.chatkit.messages.Message
 import com.pusher.chatkit.rooms.RoomListeners
-import com.pusher.chatkit.users.User
 import com.pusher.util.Result
 
 /**
@@ -38,23 +37,25 @@ class ChatFragment : Fragment() {
         val editText: EditText = rootView.findViewById(R.id.message_field)
         val chatLoading: ProgressBar = rootView.findViewById(R.id.loading_chat)
         val activity = activity as MainActivity
-        Log.e("TAG", activity.supportActionBar!!.title.toString())
-        val onlineUsers = ArrayList<User>()
+
         activity.roomsList.clear()
         for (room in activity.chatKitUser.rooms) {
-            activity.roomsList.add(DevRoom(room, false))
+            activity.roomsList.add(
+                DevRoom(
+                    room,
+                    if (activity.currentRoom != null) room == activity.currentRoom!!.room else false
+                )
+            )
         }
         activity.roomListAdapter.notifyDataSetChanged()
 
-        //TODO: Fetch Online Users
-        activity.addOnlineUser(onlineUsers)
+        Log.e("TAG", activity.supportActionBar!!.title.toString())
 
         val recyclerView: RecyclerView = rootView.findViewById(R.id.chat_messages)
 
         sendBtn = rootView.findViewById(R.id.send_btn)
 
         recyclerView.layoutManager = LinearLayoutManager(context)
-
         val messageList = ArrayList<Message>()
         messagesAdapter = MessagesAdapter(
             activity.applicationContext,
@@ -100,6 +101,7 @@ class ChatFragment : Fragment() {
                         messageList.addAll(result.value.reversed())
                         activity.runOnUiThread {
                             chatLoading.visibility = View.INVISIBLE
+                            recyclerView.adapter = messagesAdapter
                             messagesAdapter.notifyDataSetChanged()
                             recyclerView.scrollToPosition(messageList.size - 1)
                         }

@@ -32,56 +32,56 @@
             android:layout_width="wrap_content"
             app:headerLayout="@layout/main_nav_header"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:fitsSystemWindows="true">
-        <ListView
+            android:fitsSystemWindows="false"
+            android:layout_gravity="start">
+        <android.support.v7.widget.RecyclerView
                 android:id="@+id/rooms_nav_lv"
-                android:layout_marginTop="193dp"
+                android:layout_marginTop="56dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
     </android.support.design.widget.NavigationView>
 
-    <android.support.design.widget.NavigationView
-            android:id="@+id/online_nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:fitsSystemWindows="true">
-        <ListView
-                android:id="@+id/online_user_list"
-                android:layout_marginTop="30dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+    <!--<android.support.design.widget.NavigationView-->
+            <!--android:id="@+id/online_nav_view"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_gravity="end"-->
+            <!--android:fitsSystemWindows="true">-->
+        <!--<ListView-->
+                <!--android:id="@+id/online_user_list"-->
+                <!--android:layout_marginTop="30dp"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"/>-->
 
-        <LinearLayout
-                android:id="@+id/online_user_progress_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="invisible"
-                android:orientation="vertical">
-            <ProgressBar
-                    android:layout_width="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_height="wrap_content"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/brewing_some_coffee"
-                    android:textColor="@android:color/black"
-                    android:layout_marginTop="10dp"/>
-        </LinearLayout>
-        <TextView
-                android:id="@+id/empty_view_users"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="15dp"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:text="@string/nobody_to_fetch_here"
-                android:textColor="@android:color/black"/>
+        <!--<LinearLayout-->
+                <!--android:id="@+id/online_user_progress_layout"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:visibility="invisible"-->
+                <!--android:orientation="vertical">-->
+            <!--<ProgressBar-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_height="wrap_content"/>-->
+            <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="@string/brewing_some_coffee"-->
+                    <!--android:textColor="@android:color/black"-->
+                    <!--android:layout_marginTop="10dp"/>-->
+        <!--</LinearLayout>-->
+        <!--<TextView-->
+                <!--android:id="@+id/empty_view_users"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:padding="15dp"-->
+                <!--android:textSize="15sp"-->
+                <!--android:textStyle="bold"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:text="@string/nobody_to_fetch_here"-->
+                <!--android:textColor="@android:color/black"/>-->
 
 
-    </android.support.design.widget.NavigationView>
+    <!--</android.support.design.widget.NavigationView>-->
 
 </android.support.v4.widget.DrawerLayout>

@@ -1,6 +1,7 @@
 package com.cafedroid.android.devconnect.utils
 
 object Constants {
+    const val MAX_RETRY_COUNT = 3
     const val INSTANCE_LOCATOR = "v1:us1:3dd62a71-d604-4985-bbb9-5965ea8bb128"
     const val BASE_SERVER_URL = "https://ancient-temple-53657.herokuapp.com"
     const val BASE_CLIENT_URL = ""
