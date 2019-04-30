@@ -2,9 +2,12 @@ package com.cafedroid.android.devconnect
 
 
 import android.os.Bundle
+import android.support.constraint.ConstraintLayout
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,7 +36,7 @@ class ChatFragment : Fragment() {
         // Inflate the layout for this fragment
         val rootView = inflater.inflate(R.layout.fragment_chat, container, false)
         val emptyView: LinearLayout = rootView.findViewById(R.id.empty_view)
-        val chatView: RelativeLayout = rootView.findViewById(R.id.chat_view)
+        val chatView: ConstraintLayout = rootView.findViewById(R.id.chat_view)
         val editText: EditText = rootView.findViewById(R.id.message_field)
         val chatLoading: ProgressBar = rootView.findViewById(R.id.loading_chat)
         val activity = activity as MainActivity
@@ -117,6 +120,20 @@ class ChatFragment : Fragment() {
             emptyView.visibility = View.VISIBLE
             chatView.visibility = View.INVISIBLE
         }
+        editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().trim().isNotEmpty())
+                    sendBtn.visibility = View.VISIBLE
+                else sendBtn.visibility = View.GONE
+            }
+
+        })
 
         //Send a message
         sendBtn.setOnClickListener { view ->
@@ -143,7 +160,6 @@ class ChatFragment : Fragment() {
                     recyclerView.adapter = messagesAdapter
                     recyclerView.scrollToPosition(messageList.size - 1)
                 }
-
             }
         }
         return rootView

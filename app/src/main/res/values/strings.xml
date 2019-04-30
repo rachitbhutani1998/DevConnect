@@ -11,12 +11,12 @@
     <string name="brewing_some_coffee">Brewing some coffee…</string>
     <string name="join_a_team_first">Join a team first!!</string>
     <string name="nobody_to_fetch_here">Nobody to fetch here ¯\\_(ツ)_/¯</string>
-    <string name="you">You</string>
     <string name="dc_description">DevConnect needs access to your public as well as private GitHub repositories to
         provide a seamless user experience. You do not need to worry about your code as we are not going to take a peek
         at that. We just need to connect you to other contributors of your project in a user-friendly interface.
     </string>
     <string name="leave_team">Leave team</string>
+    <string name="you">You</string>
 
     <string-array name="loading_texts">
         <item>Loading your stuff…</item>

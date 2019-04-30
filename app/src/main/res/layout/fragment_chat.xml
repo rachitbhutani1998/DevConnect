@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="?attr/actionBarSize"
-                tools:context=".ChatFragment">
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+        tools:context=".ChatFragment">
 
     <LinearLayout
             android:id="@+id/empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center" app:layout_constraintTop_toTopOf="@+id/chat_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/chat_view"
+            app:layout_constraintBottom_toBottomOf="parent">
 
         <ImageView
                 android:layout_width="200dp"
@@ -41,38 +46,56 @@
                 android:text=" Join a Team"/>
     </LinearLayout>
 
-    <RelativeLayout
+    <android.support.constraint.ConstraintLayout
             android:id="@+id/chat_view"
             android:layout_width="match_parent"
             android:paddingBottom="10dp"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent" app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
         <android.support.v7.widget.RecyclerView
                 android:id="@+id/chat_messages"
                 android:layout_width="match_parent"
                 android:padding="5dp"
                 android:layout_above="@id/message_field"
-                android:layout_height="match_parent"/>
+                android:layout_height="0dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/message_field"/>
         <ProgressBar
                 android:id="@+id/loading_chat"
                 android:visibility="invisible"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="45dp"
+                android:layout_height="43dp"
                 android:indeterminateDrawable="@drawable/dc_loading"
-                android:layout_centerInParent="true"/>
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
+                app:layout_constraintStart_toStartOf="parent"/>
 
         <EditText
                 android:importantForAutofill="no"
                 android:id="@+id/message_field"
                 android:layout_width="match_parent"
-                android:inputType="textLongMessage"
+                android:inputType="text"
                 android:hint="Type a message"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="40dp"
+                android:textSize="14sp"
+                android:maxHeight="100dp"
+                android:background="@drawable/message_box"
                 android:layout_marginStart="10dp"
-                android:layout_toStartOf="@+id/send_btn"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true" tools:targetApi="o"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_height="wrap_content" tools:targetApi="o" android:layout_marginEnd="8dp"/>
         <ImageButton
-                android:id="@id/send_btn"
+                android:id="@+id/send_btn"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_send_black_24dp"
@@ -80,9 +103,10 @@
                 android:layout_marginEnd="5dp"
                 android:tint="@color/colorPrimary"
                 android:background="?android:selectableItemBackground"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/message_field"
+                app:layout_constraintTop_toTopOf="@id/message_field"/>
 
-    </RelativeLayout>
+    </android.support.constraint.ConstraintLayout>
 
-</RelativeLayout>
+</android.support.constraint.ConstraintLayout>

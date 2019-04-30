@@ -83,11 +83,6 @@ class MainActivity : AppCompatActivity() {
 
             userId = currentUser.id
 
-
-//            val onlineUserListView: ListView = findViewById(R.id.online_user_list)
-//            onlineUserListView.emptyView = findViewById(R.id.empty_view_users)
-//            onlineUserList = ArrayList()
-
             roomsListView = findViewById(R.id.rooms_nav_lv)
             roomsList = ArrayList()
 
