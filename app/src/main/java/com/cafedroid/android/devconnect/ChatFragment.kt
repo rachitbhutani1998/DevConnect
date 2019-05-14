@@ -20,14 +20,12 @@ import com.pusher.chatkit.messages.Message
 import com.pusher.chatkit.rooms.RoomListeners
 import com.pusher.util.Result
 
-/**
- * A simple [Fragment] subclass.
- *
- */
+
 class ChatFragment : Fragment() {
 
     private lateinit var sendBtn: ImageButton
     private lateinit var messagesAdapter: MessagesAdapter
+    private var initialId: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,17 +56,15 @@ class ChatFragment : Fragment() {
 
         sendBtn = rootView.findViewById(R.id.send_btn)
 
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        val layoutManager = LinearLayoutManager(context)
+        layoutManager.reverseLayout = true
+        recyclerView.layoutManager = layoutManager
         val messageList = ArrayList<Message>()
         messagesAdapter = MessagesAdapter(
             activity.applicationContext,
             messageList,
             activity.chatKitUser
         )
-        recyclerView.addOnLayoutChangeListener { view, _, _, _, bottom, _, _, _, oldBottom ->
-            if (bottom < oldBottom)
-                view.postDelayed({ recyclerView.scrollToPosition(messageList.size - 1) }, 100)
-        }
         //If user is in a room
         if (activity.currentRoom != null) {
             emptyView.visibility = View.INVISIBLE
@@ -93,20 +89,51 @@ class ChatFragment : Fragment() {
                 messageLimit = 0
             )
 
+            recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    val manager = recyclerView.layoutManager as LinearLayoutManager
+                    if (dy < 0 && manager.findLastCompletelyVisibleItemPosition() == messageList.size - 1) {
+                        Log.e("ChatFragment", "load now")
+                        activity.chatKitUser.fetchMessages(
+                            roomId = activity.currentRoom!!.room.id,
+                            direction = Direction.OLDER_FIRST,
+                            initialId = messageList[initialId].id
+                            ,
+                            callback = { result ->
+                                Log.e("CHATTING", " result")
+                                if (result is Result.Success) {
+                                    if (result.value.isEmpty())
+                                        recyclerView.removeOnScrollListener(this)
+                                    Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.room.name}")
+                                    messageList.addAll(result.value)
+                                    activity.runOnUiThread {
+                                        chatLoading.visibility = View.INVISIBLE
+                                        recyclerView.adapter = messagesAdapter
+                                        messagesAdapter.notifyDataSetChanged()
+                                        recyclerView.scrollToPosition(initialId)
+                                        initialId = messageList.size - 1
+                                    }
+                                } else if (result is Result.Failure)
+                                    Toast.makeText(context, result.error.reason, Toast.LENGTH_SHORT).show()
+                            })
+                    }
+                }
+            })
+
             //Fetch Old messages when channel joined
             activity.chatKitUser.fetchMessages(
                 roomId = activity.currentRoom!!.room.id,
-                direction = Direction.OLDER_FIRST,
                 callback = { result ->
                     Log.e("CHATTING", " $result")
                     if (result is Result.Success) {
                         Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.room.name}")
-                        messageList.addAll(result.value.reversed())
+                        messageList.addAll(result.value)
+                        initialId = messageList.size - 1
                         activity.runOnUiThread {
                             chatLoading.visibility = View.INVISIBLE
                             recyclerView.adapter = messagesAdapter
                             messagesAdapter.notifyDataSetChanged()
-                            recyclerView.scrollToPosition(messageList.size - 1)
+                            recyclerView.scrollToPosition(0)
                         }
                     } else if (result is Result.Failure)
                         Toast.makeText(context, result.error.reason, Toast.LENGTH_SHORT).show()
@@ -137,7 +164,7 @@ class ChatFragment : Fragment() {
 
         //Send a message
         sendBtn.setOnClickListener { view ->
-            if (!editText.text.isEmpty()) {
+            if (editText.text.isNotEmpty()) {
                 if (activity.currentRoom != null) {
                     activity.chatKitUser.sendMessage(
                         activity.currentRoom!!.room,
@@ -158,7 +185,7 @@ class ChatFragment : Fragment() {
                         })
                     editText.text.clear()
                     recyclerView.adapter = messagesAdapter
-                    recyclerView.scrollToPosition(messageList.size - 1)
+                    recyclerView.scrollToPosition(0)
                 }
             }
         }

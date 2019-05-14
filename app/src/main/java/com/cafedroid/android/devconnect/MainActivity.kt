@@ -122,6 +122,10 @@ class MainActivity : AppCompatActivity() {
 
             val roomChangedCallBack = object : RoomChangedCallback {
                 override fun onRoomClicked(pos: Int) {
+                    if (currentRoom!=null&& currentRoom!!.room.id == roomsList[pos].room.id){
+                        mDrawerLayout.closeDrawers()
+                        return
+                    }
                     if (currentRoom != null && currentRoom != roomsList[pos]) {
                         currentRoom!!.isSelected = false
                     }
