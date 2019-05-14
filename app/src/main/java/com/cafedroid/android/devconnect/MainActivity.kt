@@ -100,6 +100,8 @@ class MainActivity : AppCompatActivity() {
             val profileImageView: ImageView = header.findViewById(R.id.user_profile_image)
             val profileNameView: TextView = header.findViewById(R.id.user_profile_name)
             val moreOptions: ImageButton = header.findViewById(R.id.sign_out_btn)
+            if (currentRoom == null)
+                moreOptions.visibility = View.GONE
             moreOptions.setOnClickListener {
 
                 val popupMenu = PopupMenu(this, moreOptions)
@@ -122,7 +124,7 @@ class MainActivity : AppCompatActivity() {
 
             val roomChangedCallBack = object : RoomChangedCallback {
                 override fun onRoomClicked(pos: Int) {
-                    if (currentRoom!=null&& currentRoom!!.room.id == roomsList[pos].room.id){
+                    if (currentRoom != null && currentRoom!!.room.id == roomsList[pos].room.id) {
                         mDrawerLayout.closeDrawers()
                         return
                     }
@@ -130,6 +132,7 @@ class MainActivity : AppCompatActivity() {
                         currentRoom!!.isSelected = false
                     }
                     currentRoom = roomsList[pos]
+                    moreOptions.visibility = View.VISIBLE
                     roomListAdapter.notifyDataSetChanged()
                     actionbar.title = currentRoom!!.room.name
                     supportFragmentManager.beginTransaction().detach(chatFragment).attach(chatFragment).commit()

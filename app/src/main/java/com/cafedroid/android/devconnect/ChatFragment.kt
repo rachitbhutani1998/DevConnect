@@ -74,17 +74,16 @@ class ChatFragment : Fragment() {
             activity.chatKitUser.subscribeToRoom(
                 room = activity.currentRoom!!.room,
                 listeners = RoomListeners(onMessage = { message ->
-                    messageList.add(message)
+                    messageList.add(0, message)
                     activity.runOnUiThread {
                         messagesAdapter.notifyDataSetChanged()
                         recyclerView.invalidate()
-                        recyclerView.scrollToPosition(messageList.size - 1)
+                        recyclerView.scrollToPosition(0)
                     }
-                    Log.e("CHATTING", "RECEIVED.......${message.text}")
 
                 }),
                 callback = {
-                    Toast.makeText(context, "Subsctibed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Subscribed", Toast.LENGTH_SHORT).show()
                 },
                 messageLimit = 0
             )
@@ -100,11 +99,9 @@ class ChatFragment : Fragment() {
                             initialId = messageList[initialId].id
                             ,
                             callback = { result ->
-                                Log.e("CHATTING", " result")
                                 if (result is Result.Success) {
                                     if (result.value.isEmpty())
                                         recyclerView.removeOnScrollListener(this)
-                                    Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.room.name}")
                                     messageList.addAll(result.value)
                                     activity.runOnUiThread {
                                         chatLoading.visibility = View.INVISIBLE
@@ -124,9 +121,7 @@ class ChatFragment : Fragment() {
             activity.chatKitUser.fetchMessages(
                 roomId = activity.currentRoom!!.room.id,
                 callback = { result ->
-                    Log.e("CHATTING", " $result")
                     if (result is Result.Success) {
-                        Log.e("CHATTING", "Fetching messages for ${activity.currentRoom!!.room.name}")
                         messageList.addAll(result.value)
                         initialId = messageList.size - 1
                         activity.runOnUiThread {

@@ -3,7 +3,6 @@ package com.cafedroid.android.devconnect.adapter
 import android.content.Context
 import android.content.res.ColorStateList
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,23 +66,16 @@ class MessagesAdapter constructor(
         currentFormat.timeZone = currentTimeZone
 
         val testDate = currentFormat.format(date)
-//        if (p1 > 0 && messages[p1 - 1].userId == message.userId) {
-//            msgHolder.userName.visibility = View.GONE
-//            msgHolder.userImage.visibility = View.GONE
-//        } else {
-//            msgHolder.userName.visibility = View.VISIBLE
-//            msgHolder.userImage.visibility = View.VISIBLE
-//            msgHolder.timeStampTV.visibility = View.VISIBLE
-//        }
-//        if (p1 + 1 < messages.size && messages[p1 + 1].userId == message.userId && p1 > 0 && simpleFormat.parse(messages[p1 - 1].createdAt).time - date.time < 60000)
-//            msgHolder.timeStampTV.visibility = View.GONE
-//        else
-//            msgHolder.timeStampTV.visibility = View.VISIBLE
-
+        if (p1 + 1 < messages.size && messages[p1 + 1].userId == message.userId) {
+            msgHolder.userName.visibility = View.GONE
+            msgHolder.userImage.visibility = View.GONE
+        } else {
+            msgHolder.userName.visibility = View.VISIBLE
+            msgHolder.userImage.visibility = View.VISIBLE
+        }
         msgHolder.bind()
         msgHolder.timeStampTV.text = testDate
         msgHolder.userImage.text = message.userId[0].toString().toUpperCase()
-//        Glide.with(mContext).load(message.user!!.avatarURL).into(msgHolder.userImage)
         if (sender.id != message.userId)
             msgHolder.userName.text = message.userId
     }
@@ -95,7 +87,6 @@ class MessagesAdapter constructor(
             val randomAndroidColor = androidColors[Random().nextInt(androidColors.size)]
             userImage.backgroundTintList = ColorStateList.valueOf(randomAndroidColor)
             messageTV.setOnClickListener {
-                Log.e("Position", "$adapterPosition")
                 timeStampTV.visibility = if (timeStampTV.visibility == View.GONE) View.VISIBLE else View.GONE
             }
         }

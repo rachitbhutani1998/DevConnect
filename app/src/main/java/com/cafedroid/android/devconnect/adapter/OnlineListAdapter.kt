@@ -27,7 +27,6 @@ class OnlineListAdapter internal constructor(context: Context, list: ArrayList<U
         if (thisUser != null) {
             Glide.with(context).load(thisUser.avatarURL).into(imageView)
             nameView.text=thisUser.name
-            Log.i("Adapter: ", "getView: " + thisUser.name)
         }
         return listItemView
     }

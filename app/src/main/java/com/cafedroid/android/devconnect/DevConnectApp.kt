@@ -5,8 +5,6 @@ import com.androidnetworking.AndroidNetworking
 import com.crashlytics.android.Crashlytics
 import io.fabric.sdk.android.Fabric
 
-
-
 class DevConnectApp : Application() {
 
     override fun onCreate() {
