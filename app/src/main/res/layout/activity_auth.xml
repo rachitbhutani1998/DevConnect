@@ -14,7 +14,7 @@
             android:layout_height="200dp"
             android:layout_centerHorizontal="true"
             android:padding="10dp"
-            android:src="@mipmap/devc_icon"
+            android:src="@mipmap/dev_icon"
             android:contentDescription="@string/dc_description"/>
 
     <TextView android:layout_width="match_parent"

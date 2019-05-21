@@ -33,12 +33,12 @@ import com.pusher.util.Result
 import org.json.JSONObject
 import java.io.UnsupportedEncodingException
 import java.net.SocketTimeoutException
+import java.util.concurrent.ExecutionException
 import kotlin.concurrent.thread
 
 
 class MainActivity : AppCompatActivity() {
 
-    private val TAG = "MainActivity"
     private var retry = 1
     lateinit var mDrawerLayout: DrawerLayout
     private lateinit var mNavigationView: NavigationView
@@ -47,18 +47,16 @@ class MainActivity : AppCompatActivity() {
     private val splashFragment: Fragment = SplashFragment()
     private val chatFragment: Fragment = ChatFragment()
 
-    //    private lateinit var onlineUserList: ArrayList<User>
     lateinit var roomsList: ArrayList<DevRoom>
 
-    //    private lateinit var onlineAdapter: OnlineListAdapter
     lateinit var roomListAdapter: RoomListAdapter
 
     var currentRoom: DevRoom? = null
     lateinit var chatKitUser: CurrentUser
     private lateinit var userId: String
 
-    lateinit var config: PrefConfig
-    lateinit var roomsListView: RecyclerView
+    private lateinit var config: PrefConfig
+    private lateinit var roomsListView: RecyclerView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -145,8 +143,7 @@ class MainActivity : AppCompatActivity() {
 
             try {
                 connectChatManager()
-            } catch (e: SocketTimeoutException) {
-                Log.e(TAG, "Retry count: $retry")
+            } catch (e: java.lang.Exception) {
                 retry++
                 if (retry <= Constants.MAX_RETRY_COUNT)
                     connectChatManager()
@@ -170,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         alert.show()
     }
 
-    @Throws(SocketTimeoutException::class)
+    @Throws(SocketTimeoutException::class, ExecutionException::class)
     private fun connectChatManager() {
         thread {
             val chatManager = ChatManager(
@@ -233,7 +230,7 @@ class MainActivity : AppCompatActivity() {
             val alertDialog = AlertDialog.Builder(this)
                 .setTitle("Leave room?")
                 .setMessage("Are you sure you want to leave ${currentRoom!!.room.name} chat room?")
-                .setPositiveButton("Yeah, it is no more fun") { dialogInterface, i ->
+                .setPositiveButton("Yeah, it is no more fun") { _, _ ->
                     chatKitUser.leaveRoom(currentRoom!!.room, callback = { result ->
                         when (result) {
                             is Result.Success -> {
@@ -247,7 +244,7 @@ class MainActivity : AppCompatActivity() {
                         }
                     })
                 }
-                .setNegativeButton("I'll think about it") { dialogInterface, i ->
+                .setNegativeButton("I'll think about it") { dialogInterface, _ ->
                     dialogInterface.dismiss()
                 }
                 .create()
@@ -258,7 +255,6 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(mNavigationView)) {
             mDrawerLayout.closeDrawer(GravityCompat.START)
-//            mDrawerLayout.closeDrawer(GravityCompat.END)
         } else {
             super.onBackPressed()
             val size = mNavigationView.menu.size()
@@ -272,10 +268,6 @@ class MainActivity : AppCompatActivity() {
     fun openDrawer(v: View? = null) {
         mDrawerLayout.openDrawer(GravityCompat.START)
     }
-
-//    fun openOnlineDrawer(v: View? = null) {
-//        mDrawerLayout.openDrawer(GravityCompat.END)
-//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.home_menu, menu)
@@ -296,7 +288,7 @@ class MainActivity : AppCompatActivity() {
 
     @Throws(UnsupportedEncodingException::class)
     private fun getJson(strEncoded: String): String {
-        val decodedBytes = android.util.Base64.decode(strEncoded, Base64.URL_SAFE)
+        val decodedBytes = Base64.decode(strEncoded, Base64.URL_SAFE)
         return String(decodedBytes)
     }
 
