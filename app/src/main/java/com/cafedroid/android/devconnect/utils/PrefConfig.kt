@@ -5,7 +5,8 @@ import android.content.SharedPreferences
 
 class PrefConfig private constructor(context: Context) {
 
-    private val preferences: SharedPreferences = context.getSharedPreferences("cafedroid.devconnect.preference", Context.MODE_PRIVATE)
+    private val preferences: SharedPreferences =
+        context.getSharedPreferences("cafedroid.devconnect.preference", Context.MODE_PRIVATE)
 
     fun saveBoolean(key: String, value: Boolean) {
         preferences.edit()
@@ -35,8 +36,10 @@ class PrefConfig private constructor(context: Context) {
 
     companion object {
 
-        private var prefConfig: PrefConfig? = null
         const val AUTH_TOKEN = "auth_token"
+        const val DRUNK_MODE_ACTIVE: String = "drunk_mode"
+
+        private var prefConfig: PrefConfig? = null
 
         fun getInstance(context: Context): PrefConfig {
             if (prefConfig == null)

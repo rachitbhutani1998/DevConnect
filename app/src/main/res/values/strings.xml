@@ -17,6 +17,7 @@
     </string>
     <string name="leave_team">Leave team</string>
     <string name="you">You</string>
+    <string name="drunk_mode">Drunk Mode</string>
 
     <string-array name="loading_texts">
         <item>Loading your stuff…</item>

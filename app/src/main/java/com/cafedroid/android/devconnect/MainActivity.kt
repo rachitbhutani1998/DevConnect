@@ -221,8 +221,16 @@ class MainActivity : AppCompatActivity() {
                 logOut()
                 true
             }
+            R.id.settings -> {
+                goToSettingsActivity()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun goToSettingsActivity() {
+        startActivity(Intent(this,SettingsActivity::class.java))
     }
 
     private fun leaveCurrentTeam() {

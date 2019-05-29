@@ -3,4 +3,5 @@
     <item android:title="Create New Team" android:id="@+id/create_team"/>
     <item android:title="Join team" android:id="@+id/join_team"/>
     <item android:title="Log Out" android:id="@+id/log_out"/>
+    <item android:title="Settings" android:id="@+id/settings"/>
 </menu>
